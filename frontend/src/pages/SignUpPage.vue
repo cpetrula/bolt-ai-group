@@ -93,6 +93,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import api from '../services/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -114,8 +115,27 @@ const handleSubmit = async () => {
 
   try {
     await authStore.signup(formData.value)
-    // After signup, redirect to billing or login
-    router.push('/login')
+    
+    // After successful signup, redirect to Stripe checkout
+    // First login to get the auth token for billing API
+    const loginResult = await authStore.login(formData.value.email, formData.value.password)
+    
+    if (loginResult.requires2FA) {
+      // If 2FA is required, redirect to login page
+      router.push('/login')
+      return
+    }
+    
+    // Create Stripe checkout session
+    const checkoutResponse = await api.createCheckoutSession()
+    
+    if (checkoutResponse.url) {
+      // Redirect to Stripe checkout
+      window.location.href = checkoutResponse.url
+    } else {
+      // Fallback to dashboard if no checkout URL
+      router.push('/app')
+    }
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Signup failed'
     loading.value = false
