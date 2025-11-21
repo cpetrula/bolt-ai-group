@@ -11,6 +11,10 @@ interface EnvConfig {
   jwtExpiresIn: string;
   logLevel: string;
   appName: string;
+  stripeSecretKey: string;
+  stripeWebhookSecret: string;
+  stripeMonthlyPriceId: string;
+  stripeYearlyPriceId: string;
 }
 
 const getEnvVariable = (key: string, defaultValue?: string): string => {
@@ -29,4 +33,8 @@ export const env: EnvConfig = {
   jwtExpiresIn: getEnvVariable('JWT_EXPIRES_IN', '7d'),
   logLevel: getEnvVariable('LOG_LEVEL', 'info'),
   appName: getEnvVariable('APP_NAME', 'Bolt AI Salon'),
+  stripeSecretKey: getEnvVariable('STRIPE_SECRET_KEY'),
+  stripeWebhookSecret: getEnvVariable('STRIPE_WEBHOOK_SECRET'),
+  stripeMonthlyPriceId: getEnvVariable('STRIPE_MONTHLY_PRICE_ID'),
+  stripeYearlyPriceId: getEnvVariable('STRIPE_YEARLY_PRICE_ID'),
 };

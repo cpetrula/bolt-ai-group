@@ -13,6 +13,7 @@ import tenantRouter from './modules/tenants/tenant.routes';
 import employeeRouter from './modules/employees/employee.routes';
 import serviceRouter from './modules/services/service.routes';
 import appointmentRouter from './modules/appointments/appointment.routes';
+import billingRouter from './modules/billing/billing.routes';
 
 // Create Express application
 const app: Application = express();
@@ -28,6 +29,12 @@ app.use(
   })
 );
 
+// Stripe webhook needs raw body, so handle it before JSON parsing
+app.use(
+  '/api/webhooks/stripe',
+  express.raw({ type: 'application/json' })
+);
+
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,8 +42,14 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging
 app.use(requestLogger);
 
-// Multi-tenant middleware (applied globally)
-app.use(multiTenantMiddleware);
+// Multi-tenant middleware (applied globally, except for webhooks)
+app.use((req, res, next) => {
+  if (req.path === '/api/webhooks/stripe') {
+    next();
+  } else {
+    multiTenantMiddleware(req, res, next);
+  }
+});
 
 // API Routes
 app.use('/api', healthRouter);
@@ -45,6 +58,7 @@ app.use('/api', tenantRouter);
 app.use('/api/employees', employeeRouter);
 app.use('/api/services', serviceRouter);
 app.use('/api', appointmentRouter);
+app.use('/api', billingRouter);
 
 // 404 handler
 app.use(notFoundHandler);

@@ -12,3 +12,5 @@ dist/
 logs/*.log
 !logs/.gitkeep
 
+.env
+node_modules/

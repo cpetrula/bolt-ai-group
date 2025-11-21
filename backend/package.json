@@ -27,6 +27,7 @@
     "@types/ms": "^2.1.0",
     "@types/qrcode": "^1.5.6",
     "@types/speakeasy": "^2.0.10",
+    "@types/stripe": "^8.0.416",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
@@ -38,6 +39,7 @@
     "prisma": "^6.19.0",
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0",
+    "stripe": "^20.0.0",
     "winston": "^3.18.3"
   },
   "devDependencies": {

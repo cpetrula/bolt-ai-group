@@ -29,6 +29,20 @@ enum AppointmentStatus {
   NO_SHOW
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  TRIALING
+}
+
+enum SubscriptionPlan {
+  MONTHLY
+  YEARLY
+}
+
 model Tenant {
   id              String        @id @default(uuid())
   name            String
@@ -42,6 +56,7 @@ model Tenant {
   employees       Employee[]
   services        Service[]
   appointments    Appointment[]
+  subscription    Subscription?
 
   @@map("tenants")
 }
@@ -203,4 +218,27 @@ model AppointmentAddon {
   @@index([tenantId])
   @@index([appointmentId])
   @@map("appointment_addons")
+}
+
+model Subscription {
+  id                      String              @id @default(uuid())
+  tenantId                String              @unique
+  stripeCustomerId        String              @unique
+  stripeSubscriptionId    String?             @unique
+  status                  SubscriptionStatus  @default(TRIALING)
+  plan                    SubscriptionPlan    @default(MONTHLY)
+  currentPeriodStart      DateTime?
+  currentPeriodEnd        DateTime?
+  cancelAtPeriodEnd       Boolean             @default(false)
+  trialEnd                DateTime?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  
+  tenant                  Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+  @@map("subscriptions")
 }
