@@ -10,8 +10,7 @@ const levels = {
 };
 
 const level = (): string => {
-  const nodeEnv = env.nodeEnv || 'development';
-  const isDevelopment = nodeEnv === 'development';
+  const isDevelopment = env.nodeEnv === 'development';
   return isDevelopment ? 'debug' : 'warn';
 };
 

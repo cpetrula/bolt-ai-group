@@ -33,10 +33,16 @@ export const multiTenantMiddleware = async (
     const tenantId = req.headers['x-tenant-id'] as string;
 
     if (tenantId) {
-      req.tenantId = parseInt(tenantId, 10);
+      // Validate that tenantId is a non-empty string with only numeric characters
+      if (!tenantId.trim() || !/^\d+$/.test(tenantId.trim())) {
+        throw new AppError('Invalid tenant ID format. Must be a positive integer.', 400);
+      }
 
-      if (isNaN(req.tenantId)) {
-        throw new AppError('Invalid tenant ID', 400);
+      req.tenantId = parseInt(tenantId.trim(), 10);
+
+      // Additional validation: ensure parsed value is positive
+      if (req.tenantId <= 0) {
+        throw new AppError('Invalid tenant ID. Must be a positive integer.', 400);
       }
 
       // TODO: Load tenant details from database

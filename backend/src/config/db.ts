@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from './env';
+import { logger } from '../utils/logger';
 
 // Singleton pattern for Prisma client
 declare global {
@@ -20,9 +21,9 @@ if (env.nodeEnv !== 'production') {
 export const connectDB = async (): Promise<void> => {
   try {
     await prisma.$connect();
-    console.log('✅ Database connected successfully');
+    logger.info('✅ Database connected successfully');
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
+    logger.error('❌ Database connection failed:', error);
     process.exit(1);
   }
 };
