@@ -10,4 +10,5 @@ dist/
 
 # Logs
 logs/*.log
+!logs/.gitkeep
 
