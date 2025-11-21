@@ -115,10 +115,19 @@ const handleSubmit = async () => {
 
   try {
     // Step 1: Create account
-    await authStore.signup(formData.value)
+    try {
+      await authStore.signup(formData.value)
+    } catch (signupErr: any) {
+      throw new Error(signupErr.response?.data?.message || 'Failed to create account. Please check your information and try again.')
+    }
     
     // Step 2: Login to get auth token for billing API
-    const loginResult = await authStore.login(formData.value.email, formData.value.password)
+    let loginResult
+    try {
+      loginResult = await authStore.login(formData.value.email, formData.value.password)
+    } catch (loginErr: any) {
+      throw new Error('Account created but login failed. Please try logging in manually.')
+    }
     
     if (loginResult.requires2FA) {
       // If 2FA is required, redirect to login page
@@ -128,18 +137,22 @@ const handleSubmit = async () => {
     }
     
     // Step 3: Create Stripe checkout session
-    const checkoutResponse = await api.createCheckoutSession()
-    
-    if (checkoutResponse.url) {
-      // Keep loading state active during redirect to Stripe
-      window.location.href = checkoutResponse.url
-    } else {
-      // Fallback to dashboard if no checkout URL
-      loading.value = false
-      router.push('/app')
+    try {
+      const checkoutResponse = await api.createCheckoutSession()
+      
+      if (checkoutResponse.url) {
+        // Keep loading state active during redirect to Stripe
+        window.location.href = checkoutResponse.url
+      } else {
+        // Fallback to dashboard if no checkout URL
+        loading.value = false
+        router.push('/app')
+      }
+    } catch (checkoutErr: any) {
+      throw new Error('Account created but checkout setup failed. Please set up billing from your dashboard.')
     }
   } catch (err: any) {
-    error.value = err.response?.data?.message || 'Account creation or checkout setup failed. Please try again.'
+    error.value = err.message || 'An unexpected error occurred. Please try again.'
     loading.value = false
   }
 }
