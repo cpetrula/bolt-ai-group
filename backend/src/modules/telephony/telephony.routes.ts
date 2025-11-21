@@ -3,7 +3,7 @@ import * as telephonyController from './telephony.controller';
 import * as callHandler from './call.handler';
 import * as smsHandler from './sms.handler';
 import { authMiddleware } from '../../middleware/auth';
-import { authLimiter } from '../../middleware/rateLimit';
+import { apiLimiter } from '../../middleware/rateLimit';
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.post('/webhooks/twilio/sms', smsHandler.handleIncomingSMS);
 router.get(
   '/telephony/call-logs',
   authMiddleware,
-  authLimiter,
+  apiLimiter,
   telephonyController.getCallLogs
 );
 
@@ -30,7 +30,7 @@ router.get(
 router.get(
   '/telephony/notifications',
   authMiddleware,
-  authLimiter,
+  apiLimiter,
   telephonyController.getNotifications
 );
 
@@ -38,7 +38,7 @@ router.get(
 router.post(
   '/telephony/sms',
   authMiddleware,
-  authLimiter,
+  apiLimiter,
   telephonyController.sendSMSValidation,
   telephonyController.sendSMS
 );
@@ -47,7 +47,7 @@ router.post(
 router.post(
   '/telephony/appointment-confirmation',
   authMiddleware,
-  authLimiter,
+  apiLimiter,
   telephonyController.sendAppointmentNotificationValidation,
   telephonyController.sendAppointmentConfirmation
 );
@@ -56,7 +56,7 @@ router.post(
 router.post(
   '/telephony/appointment-reminder',
   authMiddleware,
-  authLimiter,
+  apiLimiter,
   telephonyController.sendAppointmentNotificationValidation,
   telephonyController.sendAppointmentReminder
 );
@@ -65,7 +65,7 @@ router.post(
 router.get(
   '/telephony/phone-number',
   authMiddleware,
-  authLimiter,
+  apiLimiter,
   telephonyController.getPhoneNumber
 );
 
@@ -73,7 +73,7 @@ router.get(
 router.post(
   '/telephony/provision-phone',
   authMiddleware,
-  authLimiter,
+  apiLimiter,
   telephonyController.provisionPhoneNumber
 );
 
