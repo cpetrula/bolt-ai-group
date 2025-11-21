@@ -49,6 +49,7 @@ model Tenant {
   businessType    String        @default("salon")
   status          TenantStatus  @default(TRIAL)
   settings        Json?
+  twilioPhoneNumber String?     @unique
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   
@@ -57,6 +58,8 @@ model Tenant {
   services        Service[]
   appointments    Appointment[]
   subscription    Subscription?
+  callLogs        CallLog[]
+  notifications   Notification[]
 
   @@map("tenants")
 }
@@ -241,4 +244,68 @@ model Subscription {
   @@index([stripeSubscriptionId])
   @@index([status])
   @@map("subscriptions")
+}
+
+enum CallReason {
+  SETUP_APPOINTMENT
+  CANCEL_APPOINTMENT
+  MODIFY_APPOINTMENT
+  GET_HOURS
+  GET_PRICING
+  OTHER
+}
+
+enum NotificationType {
+  SMS
+  EMAIL
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+}
+
+model CallLog {
+  id              String      @id @default(uuid())
+  tenantId        String
+  callSid         String      @unique
+  fromNumber      String
+  toNumber        String
+  startTime       DateTime
+  endTime         DateTime?
+  durationSeconds Int?
+  callReason      CallReason  @default(OTHER)
+  notes           String?     @db.Text
+  recordingUrl    String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  tenant          Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([callSid])
+  @@index([startTime])
+  @@map("call_logs")
+}
+
+model Notification {
+  id                  String              @id @default(uuid())
+  tenantId            String
+  type                NotificationType
+  recipient           String
+  message             String              @db.Text
+  status              NotificationStatus  @default(QUEUED)
+  relatedAppointmentId String?
+  sentAt              DateTime?
+  failureReason       String?             @db.Text
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  
+  tenant              Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([type])
+  @@map("notifications")
 }

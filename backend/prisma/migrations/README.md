@@ -64,6 +64,27 @@ Creates tables for employee and service management.
 ### 004_rollback_employee_and_service_models.sql
 Rollback script to drop employee and service tables.
 
+### 005_add_appointment_model.sql
+Creates the appointments table and related tables for booking management.
+
+**Tables:**
+- `appointments` - Stores appointment bookings with customer info, service, employee, and scheduling details
+- `appointment_addons` - Stores add-ons selected for each appointment
+
+### 005_rollback_appointment_model.sql
+Rollback script to drop appointment tables.
+
+### 006_add_telephony_tables.sql
+Creates telephony-related tables and adds Twilio phone number to tenants.
+
+**Changes:**
+- Adds `twilioPhoneNumber` field to `tenants` table
+- Creates `call_logs` table to track incoming calls with duration, reason, and metadata
+- Creates `notifications` table to track SMS and email notifications sent to customers and employees
+
+### 006_rollback_telephony_tables.sql
+Rollback script to remove telephony tables and Twilio phone number field.
+
 ## Running Migrations
 
 ### Using MySQL CLI
@@ -120,6 +141,8 @@ DATABASE_URL="mysql://username:password@localhost:3306/bolt_ai_salon"
 | 002 | Add Tenant model for multi-tenant architecture | 2025-11-21 |
 | 003 | Update User model with tenant relationship | 2025-11-21 |
 | 004 | Add Employee and Service models | 2025-11-21 |
+| 005 | Add Appointment model | 2025-11-21 |
+| 006 | Add Telephony tables (call_logs, notifications) and Twilio phone number | 2025-11-21 |
 
 ## Troubleshooting
 

@@ -14,6 +14,7 @@ import employeeRouter from './modules/employees/employee.routes';
 import serviceRouter from './modules/services/service.routes';
 import appointmentRouter from './modules/appointments/appointment.routes';
 import billingRouter from './modules/billing/billing.routes';
+import telephonyRouter from './modules/telephony/telephony.routes';
 
 // Create Express application
 const app: Application = express();
@@ -44,7 +45,7 @@ app.use(requestLogger);
 
 // Multi-tenant middleware (applied globally, except for webhooks)
 app.use((req, res, next) => {
-  if (req.path === '/api/webhooks/stripe') {
+  if (req.path === '/api/webhooks/stripe' || req.path.startsWith('/api/webhooks/twilio')) {
     next();
   } else {
     multiTenantMiddleware(req, res, next);
@@ -59,6 +60,7 @@ app.use('/api/employees', employeeRouter);
 app.use('/api/services', serviceRouter);
 app.use('/api', appointmentRouter);
 app.use('/api', billingRouter);
+app.use('/api', telephonyRouter);
 
 // 404 handler
 app.use(notFoundHandler);
