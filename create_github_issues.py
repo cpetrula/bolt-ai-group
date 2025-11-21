@@ -839,6 +839,12 @@ Create docker-compose.yml for easy local development setup.
 
 def main():
     """Main function to create GitHub issues."""
+    
+    def print_permission_error():
+        """Print helpful message for permission errors."""
+        print("  Make sure your GitHub token has 'repo' scope with write permissions")
+        print("  Generate a new token at: https://github.com/settings/tokens")
+    
     # Get GitHub token
     token = os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN")
     if not token:
@@ -879,8 +885,9 @@ def main():
         except GithubException as e:
             if e.status == 403:
                 print(f"✗ Permission denied for label '{label_name}'")
-                print(f"  Make sure your GitHub token has 'repo' scope with write permissions")
-                print(f"  Error: {e.data.get('message', str(e))}")
+                print_permission_error()
+                if hasattr(e, 'data') and e.data and isinstance(e.data, dict):
+                    print(f"  Error: {e.data.get('message', str(e))}")
             else:
                 print(f"✗ Error with label '{label_name}': {e}")
     
@@ -902,7 +909,7 @@ def main():
             failed_count += 1
             if e.status == 403:
                 print(f"✗ Permission denied creating '{title}'")
-                print(f"  Make sure your GitHub token has 'repo' scope with write permissions")
+                print_permission_error()
             else:
                 print(f"✗ Failed to create '{title}': {e}")
     
