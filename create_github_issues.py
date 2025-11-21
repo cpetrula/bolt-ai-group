@@ -11,11 +11,17 @@ Usage:
 Requirements:
     - PyGithub library: pip install PyGithub
     - GitHub token with repo access (set as GH_TOKEN environment variable)
+    
+Configuration:
+    - GITHUB_REPOSITORY: Repository name (default: cpetrula/bolt-ai-group)
 """
 
 import os
 import sys
 from github import Github, GithubException
+
+# Configuration
+DEFAULT_REPOSITORY = "cpetrula/bolt-ai-group"
 
 # Issue data structure
 LABELS_TO_CREATE = [
@@ -829,7 +835,7 @@ def main():
         sys.exit(1)
     
     # Get repository name (configurable via environment variable)
-    repo_name = os.getenv("GITHUB_REPOSITORY", "cpetrula/bolt-ai-group")
+    repo_name = os.getenv("GITHUB_REPOSITORY", DEFAULT_REPOSITORY)
     
     # Initialize GitHub client
     try:

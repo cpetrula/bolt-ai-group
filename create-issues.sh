@@ -1442,5 +1442,6 @@ Implement logic to handle subscription status changes affecting tenant access.
 # Continue with remaining epics...
 echo -e "${GREEN}=== Issue creation complete ===${NC}"
 echo ""
-echo "Note: This script creates all the epics and major subtasks."
-echo "Additional subtasks can be created as the project progresses."
+echo "Note: This script creates labels and a subset of issues."
+echo "For complete issue creation (all 16 issues), use the Python script:"
+echo "  python3 create_github_issues.py"

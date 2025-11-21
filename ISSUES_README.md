@@ -47,10 +47,10 @@ Each issue includes:
    - Generate new token with `repo` scope
    - Copy the token
 
-### Option 2: Bash Script (Alternative - Note: Partial implementation)
+### Option 2: Bash Script (Alternative - Creates subset of issues)
 
-> **Note**: The bash script (create-issues.sh) currently includes a subset of the issues. 
-> For complete issue creation, use the Python script (Option 1).
+> **Note**: The bash script (create-issues.sh) currently creates labels and several initial epic issues. 
+> For complete issue creation (**all 16 issues**), use the **Python script (Option 1)** instead.
 
 1. **GitHub CLI (gh)** installed:
    ```bash
