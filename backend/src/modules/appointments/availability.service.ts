@@ -8,6 +8,7 @@ import {
   timeRangesOverlap,
   calculateServiceTotals,
   TIME_SLOT_INTERVAL_MINUTES,
+  AppointmentTimeSlot,
 } from './appointment.utils';
 
 
@@ -138,7 +139,7 @@ export const getAvailability = async (
 
   // Mark slots as unavailable if they conflict with existing appointments
   const availableSlots = allSlots.map((slot) => {
-    const hasConflict = existingAppointments.some((appointment: any) =>
+    const hasConflict = existingAppointments.some((appointment: AppointmentTimeSlot) =>
       timeRangesOverlap(slot.startTime, slot.endTime, appointment.startTime, appointment.endTime)
     );
 
@@ -194,7 +195,7 @@ export const checkAvailability = async (
   );
 
   // Check for conflicts with existing appointments
-  const hasConflict = existingAppointments.some((appointment: any) =>
+  const hasConflict = existingAppointments.some((appointment: AppointmentTimeSlot) =>
     timeRangesOverlap(startTime, endTime, appointment.startTime, appointment.endTime)
   );
 

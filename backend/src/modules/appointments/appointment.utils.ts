@@ -6,7 +6,17 @@ import { Decimal } from '@prisma/client/runtime/library';
  * Convert time string to minutes since midnight
  */
 export const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(':').map(Number);
+  const parts = time.split(':');
+  if (parts.length !== 2) {
+    throw new Error(`Invalid time format: ${time}. Expected HH:MM format.`);
+  }
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  
+  if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+    throw new Error(`Invalid time values: ${time}. Hours must be 0-23 and minutes 0-59.`);
+  }
+  
   return hours * 60 + minutes;
 };
 
@@ -82,10 +92,21 @@ export const calculateServiceTotals = async (
         serviceId,
       },
       select: {
+        id: true,
         price: true,
         durationMinutes: true,
       },
     });
+
+    // Validate that all requested addons were found
+    if (addons.length !== addonIds.length) {
+      const foundIds = addons.map(a => a.id);
+      const missingIds = addonIds.filter(id => !foundIds.includes(id));
+      throw new AppError(
+        `Invalid addon IDs: ${missingIds.join(', ')}. Addons not found or don't belong to this service.`,
+        400
+      );
+    }
 
     totalDuration += addons.reduce((sum, addon) => sum + addon.durationMinutes, 0);
     totalPrice = addons.reduce((sum, addon) => sum.add(addon.price), totalPrice);
@@ -98,3 +119,11 @@ export const calculateServiceTotals = async (
  * Configuration for time slot generation
  */
 export const TIME_SLOT_INTERVAL_MINUTES = 30; // Default time slot interval
+
+/**
+ * Type for appointment with time fields
+ */
+export interface AppointmentTimeSlot {
+  startTime: string;
+  endTime: string;
+}

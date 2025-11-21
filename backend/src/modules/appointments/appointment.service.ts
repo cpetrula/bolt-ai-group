@@ -12,7 +12,9 @@ import {
 } from './availability.service';
 import {
   timeToMinutes,
+  timeRangesOverlap,
   calculateServiceTotals,
+  AppointmentTimeSlot,
 } from './appointment.utils';
 
 
@@ -581,11 +583,9 @@ const checkAvailabilityExcludingAppointment = async (
   });
 
   // Check for conflicts
-  const hasConflict = existingAppointments.some((appointment: any) => {
-    const appStart = timeToMinutes(appointment.startTime);
-    const appEnd = timeToMinutes(appointment.endTime);
-    return startMinutes < appEnd && endMinutes > appStart;
-  });
+  const hasConflict = existingAppointments.some((appointment: AppointmentTimeSlot) =>
+    timeRangesOverlap(startTime, endTime, appointment.startTime, appointment.endTime)
+  );
 
   return !hasConflict;
 };
