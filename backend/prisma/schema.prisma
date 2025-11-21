@@ -30,6 +30,8 @@ model Tenant {
   updatedAt       DateTime      @updatedAt
   
   users           User[]
+  employees       Employee[]
+  services        Service[]
 
   @@map("tenants")
 }
@@ -51,4 +53,93 @@ model User {
 
   @@index([tenantId])
   @@map("users")
+}
+
+model Employee {
+  id                String              @id @default(uuid())
+  tenantId          String
+  name              String
+  role              String?
+  phone             String?
+  email             String?
+  isActive          Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  tenant            Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  schedules         EmployeeSchedule[]
+  employeeServices  EmployeeService[]
+
+  @@index([tenantId])
+  @@map("employees")
+}
+
+model EmployeeSchedule {
+  id          String    @id @default(uuid())
+  tenantId    String
+  employeeId  String
+  dayOfWeek   Int       // 0-6, where 0 is Sunday
+  startTime   String    // e.g., "09:00"
+  endTime     String    // e.g., "17:00"
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([employeeId])
+  @@map("employee_schedules")
+}
+
+model Service {
+  id                String            @id @default(uuid())
+  tenantId          String
+  name              String
+  description       String?           @db.Text
+  basePrice         Decimal           @db.Decimal(10, 2)
+  durationMinutes   Int
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  addons            ServiceAddon[]
+  employeeServices  EmployeeService[]
+
+  @@index([tenantId])
+  @@map("services")
+}
+
+model ServiceAddon {
+  id              String    @id @default(uuid())
+  tenantId        String
+  serviceId       String
+  name            String
+  price           Decimal   @db.Decimal(10, 2)
+  durationMinutes Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  service         Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([serviceId])
+  @@map("service_addons")
+}
+
+model EmployeeService {
+  id          String    @id @default(uuid())
+  tenantId    String
+  employeeId  String
+  serviceId   String
+  createdAt   DateTime  @default(now())
+  
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  service     Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, serviceId])
+  @@index([tenantId])
+  @@index([employeeId])
+  @@index([serviceId])
+  @@map("employee_services")
 }
