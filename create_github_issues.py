@@ -14,6 +14,19 @@ Requirements:
     
 Configuration:
     - GITHUB_REPOSITORY: Repository name (default: cpetrula/bolt-ai-group)
+
+GitHub Token Setup:
+    1. Go to: https://github.com/settings/tokens
+    2. Click "Generate new token (classic)"
+    3. Give it a name (e.g., "Issue Creator")
+    4. Select scope: "repo" (Full control of private repositories)
+    5. Click "Generate token"
+    6. Copy the token and set it as environment variable:
+       export GH_TOKEN=your_token_here
+    
+Note:
+    - The token MUST have write permissions (repo scope)
+    - Read-only tokens will result in 403 Forbidden errors
 """
 
 import os

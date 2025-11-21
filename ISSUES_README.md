@@ -42,10 +42,16 @@ Each issue includes:
    ```bash
    pip install PyGithub
    ```
-3. **GitHub Personal Access Token** with `repo` scope:
-   - Go to GitHub Settings → Developer settings → Personal access tokens
-   - Generate new token with `repo` scope
-   - Copy the token
+3. **GitHub Personal Access Token** with **full `repo` scope** (write permissions):
+   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Click "Generate new token (classic)"
+   - Give it a name (e.g., "Issue Creator")
+   - **Important**: Select the **entire `repo` scope** checkbox (not just sub-items)
+     - This includes: repo:status, repo_deployment, public_repo, repo:invite, security_events
+   - Set an appropriate expiration date
+   - Click "Generate token" at the bottom
+   - **Copy the token immediately** (you won't be able to see it again)
+   - The token must have **write permissions** - read-only tokens will fail with 403 errors
 
 ### Option 2: Bash Script (Alternative - Creates subset of issues)
 
@@ -201,6 +207,19 @@ To modify the issues before creation:
 
 **Problem**: `Error connecting to GitHub`
 **Solution**: Verify your token has `repo` scope and is valid
+
+**Problem**: `DeprecationWarning: Argument login_or_token is deprecated`
+**Solution**: This has been fixed in the latest version of the script. Make sure you're using the updated version that uses `Auth.Token()`.
+
+**Problem**: `Request POST /repos/.../labels failed with 403: Forbidden`
+**Solution**: Your GitHub token doesn't have write permissions. Make sure to:
+1. Go to GitHub Settings → Developer settings → Personal access tokens
+2. Generate a new token with **full `repo` scope** (not just read access)
+3. Copy the token and set it: `export GH_TOKEN=your_token`
+4. The token must have write permissions to create labels and issues
+
+**Problem**: `Permission denied for label` or `Permission denied creating`
+**Solution**: Same as above - ensure your token has write permissions (full `repo` scope)
 
 ### Bash Script Issues
 
