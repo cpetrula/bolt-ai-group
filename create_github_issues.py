@@ -18,7 +18,7 @@ Configuration:
 
 import os
 import sys
-from github import Github, GithubException
+from github import Github, GithubException, Auth
 
 # Configuration
 DEFAULT_REPOSITORY = "cpetrula/bolt-ai-group"
@@ -839,7 +839,8 @@ def main():
     
     # Initialize GitHub client
     try:
-        g = Github(token)
+        auth = Auth.Token(token)
+        g = Github(auth=auth)
         # Get the repository (owner/repo format)
         repo = g.get_repo(repo_name)
         print(f"✓ Connected to repository: {repo.full_name}")
@@ -863,7 +864,12 @@ def main():
                 repo.create_label(label_name, color, description)
                 print(f"✓ Created label: {label_name}")
         except GithubException as e:
-            print(f"✗ Error with label '{label_name}': {e}")
+            if e.status == 403:
+                print(f"✗ Permission denied for label '{label_name}'")
+                print(f"  Make sure your GitHub token has 'repo' scope with write permissions")
+                print(f"  Error: {e.data.get('message', str(e))}")
+            else:
+                print(f"✗ Error with label '{label_name}': {e}")
     
     # Create issues
     print("\n=== Creating issues ===")
@@ -881,7 +887,11 @@ def main():
             print(f"✓ Created #{issue.number}: {title}")
         except GithubException as e:
             failed_count += 1
-            print(f"✗ Failed to create '{title}': {e}")
+            if e.status == 403:
+                print(f"✗ Permission denied creating '{title}'")
+                print(f"  Make sure your GitHub token has 'repo' scope with write permissions")
+            else:
+                print(f"✗ Failed to create '{title}': {e}")
     
     # Summary
     print("\n=== Summary ===")
