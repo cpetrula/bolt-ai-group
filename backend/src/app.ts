@@ -12,6 +12,7 @@ import authRouter from './modules/auth/auth.routes';
 import tenantRouter from './modules/tenants/tenant.routes';
 import employeeRouter from './modules/employees/employee.routes';
 import serviceRouter from './modules/services/service.routes';
+import appointmentRouter from './modules/appointments/appointment.routes';
 
 // Create Express application
 const app: Application = express();
@@ -43,6 +44,7 @@ app.use('/api/auth', authRouter);
 app.use('/api', tenantRouter);
 app.use('/api/employees', employeeRouter);
 app.use('/api/services', serviceRouter);
+app.use('/api', appointmentRouter);
 
 // 404 handler
 app.use(notFoundHandler);
