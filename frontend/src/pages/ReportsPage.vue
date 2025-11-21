@@ -182,8 +182,8 @@ onMounted(async () => {
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
   
-  dateRange.start = firstDay.toISOString().split('T')[0] || ''
-  dateRange.end = lastDay.toISOString().split('T')[0] || ''
+  dateRange.start = firstDay.toISOString().split('T')[0]!
+  dateRange.end = lastDay.toISOString().split('T')[0]!
   
   await generateReports()
 })

@@ -24,7 +24,7 @@ export const useServicesStore = defineStore('services', () => {
     
     try {
       const response = await api.getServices()
-      services.value = response.services
+      services.value = response.services || []
       loading.value = false
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to fetch services'

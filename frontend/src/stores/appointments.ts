@@ -29,7 +29,7 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     
     try {
       const response = await api.getAppointments(params)
-      appointments.value = response.appointments
+      appointments.value = response.appointments || []
       loading.value = false
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to fetch appointments'

@@ -24,7 +24,7 @@ export const useEmployeesStore = defineStore('employees', () => {
     
     try {
       const response = await api.getEmployees()
-      employees.value = response.employees
+      employees.value = response.employees || []
       loading.value = false
     } catch (err: any) {
       error.value = err.response?.data?.message || 'Failed to fetch employees'

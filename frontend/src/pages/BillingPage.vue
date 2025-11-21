@@ -20,7 +20,7 @@
         </div>
         <div class="mb-4">
           <p class="text-gray-600">Amount</p>
-          <p class="text-2xl font-bold">{{ formatPrice(subscription?.amount || 29500) }}</p>
+          <p class="text-2xl font-bold">{{ formatMonthlyPrice(subscription?.amount || 29500) }}</p>
         </div>
         <div class="mb-6">
           <p class="text-gray-600">Next Billing Date</p>
@@ -69,7 +69,7 @@
               <p class="text-sm text-gray-600">{{ formatDate(invoice.date) }}</p>
             </div>
             <div class="text-right">
-              <p class="font-semibold">{{ formatPrice(invoice.amount) }}</p>
+              <p class="font-semibold">{{ formatMonthlyPrice(invoice.amount) }}</p>
               <a 
                 v-if="invoice.pdfUrl"
                 :href="invoice.pdfUrl" 
@@ -161,7 +161,7 @@ async function openCustomerPortal() {
   }
 }
 
-function formatPrice(cents: number): string {
+function formatMonthlyPrice(cents: number): string {
   return `$${(cents / 100).toFixed(2)} / month`
 }
 
