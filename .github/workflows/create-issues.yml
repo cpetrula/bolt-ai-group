@@ -11,6 +11,10 @@ on:
         required: true
         default: ''
 
+permissions:
+  issues: write
+  contents: read
+
 jobs:
   create-issues:
     runs-on: ubuntu-latest
