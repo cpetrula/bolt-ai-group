@@ -150,15 +150,24 @@ export const updateService = async (
   // Verify service exists and belongs to tenant
   await getServiceById(tenantId, serviceId);
 
+  // Build update data object with only defined fields
+  const updateData: Partial<{
+    name: string;
+    description: string | null;
+    basePrice: number;
+    durationMinutes: number;
+    isActive: boolean;
+  }> = {};
+
+  if (data.name !== undefined) updateData.name = data.name;
+  if (data.description !== undefined) updateData.description = data.description || null;
+  if (data.basePrice !== undefined) updateData.basePrice = data.basePrice;
+  if (data.durationMinutes !== undefined) updateData.durationMinutes = data.durationMinutes;
+  if (data.isActive !== undefined) updateData.isActive = data.isActive;
+
   const service = await prisma.service.update({
     where: { id: serviceId },
-    data: {
-      name: data.name,
-      description: data.description,
-      basePrice: data.basePrice,
-      durationMinutes: data.durationMinutes,
-      isActive: data.isActive,
-    },
+    data: updateData,
     select: {
       id: true,
       tenantId: true,
@@ -280,12 +289,12 @@ export const seedDefaultServices = async (tenantId: string) => {
     },
   ];
 
-  // Create all services with their addons
-  const createdServices = await Promise.all(
-    defaultServices.map((service) =>
-      createService(tenantId, service)
-    )
-  );
+  // Create all services sequentially to avoid database conflicts
+  const createdServices = [];
+  for (const service of defaultServices) {
+    const created = await createService(tenantId, service);
+    createdServices.push(created);
+  }
 
   return createdServices;
 };
