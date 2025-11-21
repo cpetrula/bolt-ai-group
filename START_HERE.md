@@ -87,7 +87,9 @@ python3 create_github_issues.py
 **Pros**: Direct execution, full control
 **Requires**: Python 3, PyGithub
 
-### Method 3: Bash Script with GitHub CLI
+### Method 3: Bash Script with GitHub CLI (Alternative - Partial)
+
+> **Note**: This bash script includes a subset of issues. For complete creation of all 16 issues, use Method 1 or 2.
 
 ```bash
 gh auth login
@@ -96,6 +98,7 @@ gh auth login
 
 **Pros**: Uses official GitHub CLI
 **Requires**: GitHub CLI (gh)
+**Note**: Creates labels + subset of issues
 
 ---
 

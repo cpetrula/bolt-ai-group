@@ -58,7 +58,8 @@ fi
 # Confirm before creating
 echo "======================================================================" 
 echo ""
-echo "Ready to create issues in: cpetrula/bolt-ai-group"
+REPO_NAME="${GITHUB_REPOSITORY:-cpetrula/bolt-ai-group}"
+echo "Ready to create issues in: $REPO_NAME"
 echo ""
 read -p "Do you want to proceed? (yes/no): " confirm
 

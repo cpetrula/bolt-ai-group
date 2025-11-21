@@ -828,11 +828,14 @@ def main():
         print("Example: export GH_TOKEN=your_token_here")
         sys.exit(1)
     
+    # Get repository name (configurable via environment variable)
+    repo_name = os.getenv("GITHUB_REPOSITORY", "cpetrula/bolt-ai-group")
+    
     # Initialize GitHub client
     try:
         g = Github(token)
         # Get the repository (owner/repo format)
-        repo = g.get_repo("cpetrula/bolt-ai-group")
+        repo = g.get_repo(repo_name)
         print(f"✓ Connected to repository: {repo.full_name}")
     except GithubException as e:
         print(f"Error connecting to GitHub: {e}")

@@ -161,7 +161,10 @@ export GH_TOKEN=your_token_here
 python3 create_github_issues.py
 ```
 
-### Using Bash Script
+### Using Bash Script (Alternative)
+
+> **Note**: The bash script currently includes a partial set of issues. 
+> For complete issue creation (all 16 issues), use the Python script instead.
 
 ```bash
 # Install GitHub CLI
@@ -172,7 +175,7 @@ sudo apt install gh  # Linux
 # Authenticate
 gh auth login
 
-# Run script
+# Run script (creates subset of issues)
 ./create-issues.sh
 ```
 
