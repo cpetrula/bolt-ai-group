@@ -16,6 +16,7 @@ import appointmentRouter from './modules/appointments/appointment.routes';
 import billingRouter from './modules/billing/billing.routes';
 import telephonyRouter from './modules/telephony/telephony.routes';
 import aiRouter from './modules/ai-assistant/ai.routes';
+import reportsRouter from './modules/reports/reports.routes';
 
 // Create Express application
 const app: Application = express();
@@ -63,6 +64,7 @@ app.use('/api', appointmentRouter);
 app.use('/api', billingRouter);
 app.use('/api', telephonyRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api', reportsRouter);
 
 // 404 handler
 app.use(notFoundHandler);
