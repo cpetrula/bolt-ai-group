@@ -18,6 +18,10 @@ interface EnvConfig {
   twilioAccountSid: string;
   twilioAuthToken: string;
   twilioPhoneNumber: string;
+  openaiApiKey?: string;
+  vapiApiKey?: string;
+  vapiAssistantId?: string;
+  elevenlabsApiKey?: string;
 }
 
 const getEnvVariable = (key: string, defaultValue?: string): string => {
@@ -43,4 +47,8 @@ export const env: EnvConfig = {
   twilioAccountSid: getEnvVariable('TWILIO_ACCOUNT_SID'),
   twilioAuthToken: getEnvVariable('TWILIO_AUTH_TOKEN'),
   twilioPhoneNumber: getEnvVariable('TWILIO_PHONE_NUMBER'),
+  openaiApiKey: process.env.OPENAI_API_KEY,
+  vapiApiKey: process.env.VAPI_API_KEY,
+  vapiAssistantId: process.env.VAPI_ASSISTANT_ID,
+  elevenlabsApiKey: process.env.ELEVENLABS_API_KEY,
 };

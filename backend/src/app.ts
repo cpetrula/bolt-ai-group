@@ -15,6 +15,7 @@ import serviceRouter from './modules/services/service.routes';
 import appointmentRouter from './modules/appointments/appointment.routes';
 import billingRouter from './modules/billing/billing.routes';
 import telephonyRouter from './modules/telephony/telephony.routes';
+import aiRouter from './modules/ai-assistant/ai.routes';
 
 // Create Express application
 const app: Application = express();
@@ -45,7 +46,7 @@ app.use(requestLogger);
 
 // Multi-tenant middleware (applied globally, except for webhooks)
 app.use((req, res, next) => {
-  if (req.path === '/api/webhooks/stripe' || req.path.startsWith('/api/webhooks/twilio')) {
+  if (req.path === '/api/webhooks/stripe' || req.path.startsWith('/api/webhooks/twilio') || req.path === '/api/ai/webhooks/vapi') {
     next();
   } else {
     multiTenantMiddleware(req, res, next);
@@ -61,6 +62,7 @@ app.use('/api/services', serviceRouter);
 app.use('/api', appointmentRouter);
 app.use('/api', billingRouter);
 app.use('/api', telephonyRouter);
+app.use('/api/ai', aiRouter);
 
 // 404 handler
 app.use(notFoundHandler);
