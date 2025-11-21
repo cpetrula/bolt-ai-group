@@ -5,6 +5,24 @@ import * as stripeService from './stripe.service';
 import * as billingService from './billing.service';
 
 /**
+ * Extended Stripe Subscription interface to include properties
+ * that exist in the API but may not be in the type definitions
+ */
+interface StripeSubscriptionExtended extends Stripe.Subscription {
+  current_period_start: number;
+  current_period_end: number;
+  cancel_at_period_end: boolean;
+}
+
+/**
+ * Extended Stripe Invoice interface to include subscription property
+ * that exists in the API but may not be in the type definitions
+ */
+interface StripeInvoiceExtended extends Stripe.Invoice {
+  subscription: string | Stripe.Subscription | null;
+}
+
+/**
  * Handle Stripe webhook events
  */
 export const handleWebhook = async (
@@ -111,15 +129,14 @@ const handleCheckoutSessionCompleted = async (
 const handleSubscriptionUpdate = async (
   subscription: Stripe.Subscription
 ): Promise<void> => {
+  const sub = subscription as StripeSubscriptionExtended;
   const {
     id,
     status,
-  } = subscription;
-
-  // Access properties using bracket notation to avoid TypeScript errors
-  const currentPeriodStart = (subscription as any).current_period_start as number;
-  const currentPeriodEnd = (subscription as any).current_period_end as number;
-  const cancelAtPeriodEnd = (subscription as any).cancel_at_period_end as boolean;
+    current_period_start: currentPeriodStart,
+    current_period_end: currentPeriodEnd,
+    cancel_at_period_end: cancelAtPeriodEnd,
+  } = sub;
 
   await billingService.updateSubscriptionFromStripe(
     id,
@@ -151,11 +168,10 @@ const handleSubscriptionDeleted = async (
 const handleInvoicePaymentSucceeded = async (
   invoice: Stripe.Invoice
 ): Promise<void> => {
-  // Access subscription property using type assertion
-  const subscription = (invoice as any).subscription;
-  const subscriptionId = typeof subscription === 'string' 
-    ? subscription 
-    : subscription?.id;
+  const inv = invoice as StripeInvoiceExtended;
+  const subscriptionId = typeof inv.subscription === 'string' 
+    ? inv.subscription 
+    : inv.subscription?.id;
 
   if (!subscriptionId) {
     logger.info('Invoice not associated with a subscription');
@@ -171,11 +187,10 @@ const handleInvoicePaymentSucceeded = async (
 const handleInvoicePaymentFailed = async (
   invoice: Stripe.Invoice
 ): Promise<void> => {
-  // Access subscription property using type assertion
-  const subscription = (invoice as any).subscription;
-  const subscriptionId = typeof subscription === 'string' 
-    ? subscription 
-    : subscription?.id;
+  const inv = invoice as StripeInvoiceExtended;
+  const subscriptionId = typeof inv.subscription === 'string' 
+    ? inv.subscription 
+    : inv.subscription?.id;
 
   if (!subscriptionId) {
     logger.info('Invoice not associated with a subscription');
