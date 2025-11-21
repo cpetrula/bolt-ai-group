@@ -8,6 +8,7 @@ import { requestLogger } from './middleware/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { multiTenantMiddleware } from './middleware/multiTenant';
 import healthRouter from './routes/health';
+import authRouter from './modules/auth/auth.routes';
 
 // Create Express application
 const app: Application = express();
@@ -35,6 +36,7 @@ app.use(multiTenantMiddleware);
 
 // API Routes
 app.use('/api', healthRouter);
+app.use('/api/auth', authRouter);
 
 // 404 handler
 app.use(notFoundHandler);
