@@ -337,5 +337,14 @@ export const getAvailabilityValidation = [
     .notEmpty()
     .isISO8601()
     .withMessage('Valid date is required'),
-  query('addonIds').optional(),
+  query('addonIds')
+    .optional()
+    .custom((value) => {
+      // Accept both comma-separated string and array
+      if (typeof value === 'string') {
+        return value.split(',').every((id) => id.trim().length > 0);
+      }
+      return Array.isArray(value);
+    })
+    .withMessage('Addon IDs must be a comma-separated string or array of IDs'),
 ];

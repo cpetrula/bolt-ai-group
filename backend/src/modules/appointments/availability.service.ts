@@ -1,48 +1,15 @@
 import { prisma } from '../../config/db';
 import { AppError } from '../../middleware/errorHandler';
 import { TimeSlot, AvailabilityQuery } from './appointment.model';
+import {
+  timeToMinutes,
+  minutesToTime,
+  addMinutesToTime,
+  timeRangesOverlap,
+  calculateServiceTotals,
+  TIME_SLOT_INTERVAL_MINUTES,
+} from './appointment.utils';
 
-/**
- * Helper function to convert time string to minutes since midnight
- */
-const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-/**
- * Helper function to convert minutes since midnight to time string
- */
-const minutesToTime = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-};
-
-/**
- * Helper function to add minutes to a time string
- */
-const addMinutesToTime = (time: string, minutesToAdd: number): string => {
-  const totalMinutes = timeToMinutes(time) + minutesToAdd;
-  return minutesToTime(totalMinutes);
-};
-
-/**
- * Check if two time ranges overlap
- */
-const timeRangesOverlap = (
-  start1: string,
-  end1: string,
-  start2: string,
-  end2: string
-): boolean => {
-  const start1Min = timeToMinutes(start1);
-  const end1Min = timeToMinutes(end1);
-  const start2Min = timeToMinutes(start2);
-  const end2Min = timeToMinutes(end2);
-
-  return start1Min < end2Min && end1Min > start2Min;
-};
 
 /**
  * Get employee's working schedule for a specific day
@@ -100,51 +67,6 @@ const getEmployeeAppointments = async (
   return appointments;
 };
 
-/**
- * Calculate total duration of service including addons
- */
-const calculateTotalDuration = async (
-  tenantId: string,
-  serviceId: string,
-  addonIds?: string[]
-): Promise<number> => {
-  // Get base service duration
-  const service = await prisma.service.findFirst({
-    where: {
-      id: serviceId,
-      tenantId,
-    },
-    select: {
-      durationMinutes: true,
-    },
-  });
-
-  if (!service) {
-    throw new AppError('Service not found', 404);
-  }
-
-  let totalDuration = service.durationMinutes;
-
-  // Add addon durations if provided
-  if (addonIds && addonIds.length > 0) {
-    const addons = await prisma.serviceAddon.findMany({
-      where: {
-        id: {
-          in: addonIds,
-        },
-        tenantId,
-        serviceId,
-      },
-      select: {
-        durationMinutes: true,
-      },
-    });
-
-    totalDuration += addons.reduce((sum, addon) => sum + addon.durationMinutes, 0);
-  }
-
-  return totalDuration;
-};
 
 /**
  * Generate time slots for a day based on employee schedule
@@ -158,7 +80,7 @@ const generateTimeSlots = (
   const startMinutes = timeToMinutes(startTime);
   const endMinutes = timeToMinutes(endTime);
 
-  for (let minutes = startMinutes; minutes + slotDuration <= endMinutes; minutes += 30) {
+  for (let minutes = startMinutes; minutes + slotDuration <= endMinutes; minutes += TIME_SLOT_INTERVAL_MINUTES) {
     const slotStart = minutesToTime(minutes);
     const slotEnd = addMinutesToTime(slotStart, slotDuration);
 
@@ -198,7 +120,7 @@ export const getAvailability = async (
   }
 
   // Calculate total duration needed
-  const totalDuration = await calculateTotalDuration(tenantId, serviceId, addonIds);
+  const { totalDuration } = await calculateServiceTotals(tenantId, serviceId, addonIds);
 
   // Generate all possible time slots
   const allSlots = generateTimeSlots(
@@ -251,7 +173,7 @@ export const checkAvailability = async (
   }
 
   // Calculate total duration needed
-  const totalDuration = await calculateTotalDuration(tenantId, serviceId, addonIds);
+  const { totalDuration } = await calculateServiceTotals(tenantId, serviceId, addonIds);
   const endTime = addMinutesToTime(startTime, totalDuration);
 
   // Check if the time slot is within employee's working hours
@@ -288,6 +210,6 @@ export const calculateEndTime = async (
   startTime: string,
   addonIds?: string[]
 ): Promise<string> => {
-  const totalDuration = await calculateTotalDuration(tenantId, serviceId, addonIds);
+  const { totalDuration } = await calculateServiceTotals(tenantId, serviceId, addonIds);
   return addMinutesToTime(startTime, totalDuration);
 };

@@ -10,103 +10,11 @@ import {
   checkAvailability,
   calculateEndTime,
 } from './availability.service';
-import { Decimal } from '@prisma/client/runtime/library';
+import {
+  timeToMinutes,
+  calculateServiceTotals,
+} from './appointment.utils';
 
-/**
- * Calculate total price of appointment including addons
- */
-const calculateTotalPrice = async (
-  tenantId: string,
-  serviceId: string,
-  addonIds?: string[]
-): Promise<Decimal> => {
-  // Get base service price
-  const service = await prisma.service.findFirst({
-    where: {
-      id: serviceId,
-      tenantId,
-    },
-    select: {
-      basePrice: true,
-    },
-  });
-
-  if (!service) {
-    throw new AppError('Service not found', 404);
-  }
-
-  let totalPrice = service.basePrice;
-
-  // Add addon prices if provided
-  if (addonIds && addonIds.length > 0) {
-    const addons = await prisma.serviceAddon.findMany({
-      where: {
-        id: {
-          in: addonIds,
-        },
-        tenantId,
-        serviceId,
-      },
-      select: {
-        price: true,
-      },
-    });
-
-    const addonTotal = addons.reduce(
-      (sum, addon) => sum.add(addon.price),
-      new Decimal(0)
-    );
-    totalPrice = totalPrice.add(addonTotal);
-  }
-
-  return totalPrice;
-};
-
-/**
- * Calculate total duration of service including addons
- */
-const calculateTotalDuration = async (
-  tenantId: string,
-  serviceId: string,
-  addonIds?: string[]
-): Promise<number> => {
-  // Get base service duration
-  const service = await prisma.service.findFirst({
-    where: {
-      id: serviceId,
-      tenantId,
-    },
-    select: {
-      durationMinutes: true,
-    },
-  });
-
-  if (!service) {
-    throw new AppError('Service not found', 404);
-  }
-
-  let totalDuration = service.durationMinutes;
-
-  // Add addon durations if provided
-  if (addonIds && addonIds.length > 0) {
-    const addons = await prisma.serviceAddon.findMany({
-      where: {
-        id: {
-          in: addonIds,
-        },
-        tenantId,
-        serviceId,
-      },
-      select: {
-        durationMinutes: true,
-      },
-    });
-
-    totalDuration += addons.reduce((sum, addon) => sum + addon.durationMinutes, 0);
-  }
-
-  return totalDuration;
-};
 
 /**
  * Get all appointments for a tenant
@@ -289,8 +197,7 @@ export const createAppointment = async (
   }
 
   // Calculate total price and duration
-  const totalPrice = await calculateTotalPrice(tenantId, serviceId, addonIds);
-  const totalDuration = await calculateTotalDuration(tenantId, serviceId, addonIds);
+  const { totalPrice, totalDuration } = await calculateServiceTotals(tenantId, serviceId, addonIds);
 
   // Create appointment with addons in a transaction
   const appointment = await prisma.$transaction(async (tx) => {
@@ -440,8 +347,7 @@ export const updateAppointment = async (
     }
 
     // Calculate new price and duration
-    const totalPrice = await calculateTotalPrice(tenantId, newServiceId, newAddonIds);
-    const totalDuration = await calculateTotalDuration(tenantId, newServiceId, newAddonIds);
+    const { totalPrice, totalDuration } = await calculateServiceTotals(tenantId, newServiceId, newAddonIds);
 
     // Update appointment with new addons in a transaction
     await prisma.$transaction(async (tx) => {
@@ -636,12 +542,6 @@ const checkAvailabilityExcludingAppointment = async (
 
   // Calculate end time
   const endTime = await calculateEndTime(tenantId, serviceId, startTime, addonIds);
-
-  // Helper to convert time to minutes
-  const timeToMinutes = (time: string): number => {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
 
   // Check if within working hours
   const startMinutes = timeToMinutes(startTime);
