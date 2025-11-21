@@ -38,6 +38,6 @@ export const verify2FAToken = (token: string, secret: string): boolean => {
     secret,
     encoding: 'base32',
     token,
-    window: 2, // Allow 2 time steps (60 seconds) of clock drift
+    window: 2, // Allow ±2 time steps (±60 seconds) of clock drift
   });
 };

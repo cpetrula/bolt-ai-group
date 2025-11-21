@@ -6,6 +6,10 @@ import { AppError } from '../../middleware/errorHandler';
 
 const SALT_ROUNDS = 12;
 
+// Pre-computed dummy hash for timing attack prevention
+// This matches the bcrypt format with the same salt rounds
+const DUMMY_HASH = '$2b$12$LIVGc/c/4lZqqUJ/6sHXcOqLqF.mGBCMCzXLRRNqyXLvqRqjLWj3u';
+
 export interface SignupData {
   email: string;
   password: string;
@@ -94,7 +98,8 @@ export const login = async (data: LoginData) => {
   });
 
   // Always perform password comparison to prevent timing attacks
-  const passwordToCompare = user?.password || '$2b$12$invalidhashfortimingreasonsinvalidhash';
+  // Use a dummy hash if user doesn't exist to maintain constant time
+  const passwordToCompare = user?.password || DUMMY_HASH;
   const isPasswordValid = await comparePassword(password, passwordToCompare);
 
   if (!user || !isPasswordValid) {
