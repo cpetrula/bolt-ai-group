@@ -1,5 +1,6 @@
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
+import { env } from '../../config/env';
 
 export interface TwoFactorSecret {
   secret: string;
@@ -13,7 +14,7 @@ export const generate2FASecret = async (
   email: string
 ): Promise<TwoFactorSecret> => {
   const secret = speakeasy.generateSecret({
-    name: `Bolt AI Salon (${email})`,
+    name: `${env.appName} (${email})`,
     length: 32,
   });
 

@@ -93,14 +93,11 @@ export const login = async (data: LoginData) => {
     where: { email: email.toLowerCase() },
   });
 
-  if (!user) {
-    throw new AppError('Invalid email or password', 401);
-  }
+  // Always perform password comparison to prevent timing attacks
+  const passwordToCompare = user?.password || '$2b$12$invalidhashfortimingreasonsinvalidhash';
+  const isPasswordValid = await comparePassword(password, passwordToCompare);
 
-  // Verify password
-  const isPasswordValid = await comparePassword(password, user.password);
-
-  if (!isPasswordValid) {
+  if (!user || !isPasswordValid) {
     throw new AppError('Invalid email or password', 401);
   }
 
@@ -163,11 +160,11 @@ export const forgotPassword = async (email: string) => {
     },
   });
 
-  // In production, send email with reset link
-  // For now, return the token (in production, this should be sent via email)
+  // TODO: In production, send email with reset link containing the token
+  // Example: sendEmail(user.email, `Reset link: ${FRONTEND_URL}/reset-password?token=${resetToken}`)
+  
   return {
     message: 'If the email exists, a reset link has been sent',
-    resetToken, // Remove this in production
   };
 };
 

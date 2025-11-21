@@ -10,6 +10,7 @@ interface EnvConfig {
   jwtSecret: string;
   jwtExpiresIn: string;
   logLevel: string;
+  appName: string;
 }
 
 const getEnvVariable = (key: string, defaultValue?: string): string => {
@@ -27,4 +28,5 @@ export const env: EnvConfig = {
   jwtSecret: getEnvVariable('JWT_SECRET'),
   jwtExpiresIn: getEnvVariable('JWT_EXPIRES_IN', '7d'),
   logLevel: getEnvVariable('LOG_LEVEL', 'info'),
+  appName: getEnvVariable('APP_NAME', 'Bolt AI Salon'),
 };
