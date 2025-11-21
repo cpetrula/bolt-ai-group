@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
+import { verifyToken } from '../modules/auth/jwt.utils';
 import { AppError } from './errorHandler';
 
 // Extend Express Request type to include tenant information
 declare global {
   namespace Express {
     interface Request {
-      tenantId?: number;
+      tenantId?: string;
       tenant?: {
-        id: number;
+        id: string;
         name: string;
         businessType: string;
       };
@@ -28,30 +29,64 @@ export const multiTenantMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    // For now, we'll use a custom header for tenant identification
-    // This will be enhanced with JWT-based tenant extraction later
-    const tenantId = req.headers['x-tenant-id'] as string;
-
-    if (tenantId) {
-      // Validate that tenantId is a non-empty string with only numeric characters
-      if (!tenantId.trim() || !/^\d+$/.test(tenantId.trim())) {
-        throw new AppError('Invalid tenant ID format. Must be a positive integer.', 400);
+    // First, try to extract tenant from JWT token
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const token = authHeader.substring(7);
+        const payload = verifyToken(token);
+        
+        if (payload.tenantId) {
+          req.tenantId = payload.tenantId;
+          
+          // Load tenant details from database
+          const { prisma } = await import('../config/db');
+          const tenant = await prisma.tenant.findUnique({
+            where: { id: payload.tenantId },
+            select: {
+              id: true,
+              name: true,
+              businessType: true,
+            },
+          });
+          
+          if (tenant) {
+            req.tenant = tenant;
+          }
+        }
+      } catch (error) {
+        // Token verification failed - continue without tenant context
+        // The auth middleware will handle authentication errors
       }
+    }
+    
+    // Fallback: Use custom header for tenant identification (for API/webhook calls)
+    if (!req.tenantId) {
+      const tenantId = req.headers['x-tenant-id'] as string;
+      
+      if (tenantId) {
+        // Validate that tenantId is a valid UUID format
+        if (!tenantId.trim() || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId.trim())) {
+          throw new AppError('Invalid tenant ID format. Must be a valid UUID.', 400);
+        }
 
-      req.tenantId = parseInt(tenantId.trim(), 10);
+        req.tenantId = tenantId.trim();
 
-      // Additional validation: ensure parsed value is positive
-      if (req.tenantId <= 0) {
-        throw new AppError('Invalid tenant ID. Must be a positive integer.', 400);
+        // Load tenant details from database
+        const { prisma } = await import('../config/db');
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: req.tenantId },
+          select: {
+            id: true,
+            name: true,
+            businessType: true,
+          },
+        });
+        
+        if (tenant) {
+          req.tenant = tenant;
+        }
       }
-
-      // TODO: Load tenant details from database
-      // For now, just store the tenant ID
-      req.tenant = {
-        id: req.tenantId,
-        name: 'Demo Tenant',
-        businessType: 'salon',
-      };
     }
 
     // Continue to next middleware

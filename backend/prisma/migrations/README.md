@@ -25,6 +25,32 @@ Creates the `users` table with all required fields for authentication and 2FA.
 ### 001_rollback_user_model.sql
 Rollback script to drop the `users` table.
 
+### 002_add_tenant_model.sql
+Creates the `tenants` table for multi-tenant architecture.
+
+**Fields:**
+- `id` (VARCHAR(36), PRIMARY KEY) - UUID for tenant identification
+- `name` (VARCHAR(255)) - Tenant/business name
+- `businessType` (VARCHAR(100), default: 'salon') - Type of business
+- `status` (ENUM: 'ACTIVE', 'INACTIVE', 'SUSPENDED', 'TRIAL', default: 'TRIAL') - Tenant status
+- `settings` (JSON, nullable) - Tenant-specific settings
+- `createdAt` (DATETIME(3)) - Record creation timestamp
+- `updatedAt` (DATETIME(3)) - Record update timestamp
+
+### 002_rollback_tenant_model.sql
+Rollback script to drop the `tenants` table.
+
+### 003_update_user_with_tenant.sql
+Updates the `users` table to add tenant relationship.
+
+**Changes:**
+- Adds `tenantId` (VARCHAR(36), nullable) - Foreign key to tenants table
+- Adds index on `tenantId`
+- Adds foreign key constraint with CASCADE on delete
+
+### 003_rollback_user_with_tenant.sql
+Rollback script to remove tenant relationship from users table.
+
 ## Running Migrations
 
 ### Using MySQL CLI
@@ -78,6 +104,8 @@ DATABASE_URL="mysql://username:password@localhost:3306/bolt_ai_salon"
 | Version | Description | Date |
 |---------|-------------|------|
 | 001 | Add User model for authentication | 2025-11-21 |
+| 002 | Add Tenant model for multi-tenant architecture | 2025-11-21 |
+| 003 | Update User model with tenant relationship | 2025-11-21 |
 
 ## Troubleshooting
 

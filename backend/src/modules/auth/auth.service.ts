@@ -61,23 +61,35 @@ export const signup = async (data: SignupData) => {
   // Hash password
   const hashedPassword = await hashPassword(password);
 
-  // Create user
+  // Create tenant for the new user
+  const tenant = await prisma.tenant.create({
+    data: {
+      name: `${email.split('@')[0]}'s Business`,
+      businessType: 'salon',
+      status: 'TRIAL',
+    },
+  });
+
+  // Create user linked to tenant
   const user = await prisma.user.create({
     data: {
       email: email.toLowerCase(),
       password: hashedPassword,
+      tenantId: tenant.id,
     },
     select: {
       id: true,
       email: true,
+      tenantId: true,
       createdAt: true,
     },
   });
 
-  // Generate JWT token
+  // Generate JWT token with tenantId
   const token = generateToken({
     userId: user.id,
     email: user.email,
+    tenantId: user.tenantId || undefined,
   });
 
   return {
@@ -124,10 +136,11 @@ export const login = async (data: LoginData) => {
     }
   }
 
-  // Generate JWT token
+  // Generate JWT token with tenantId
   const token = generateToken({
     userId: user.id,
     email: user.email,
+    tenantId: user.tenantId || undefined,
   });
 
   return {
@@ -135,6 +148,7 @@ export const login = async (data: LoginData) => {
       id: user.id,
       email: user.email,
       twoFactorEnabled: user.twoFactorEnabled,
+      tenantId: user.tenantId,
     },
     token,
   };
