@@ -886,7 +886,7 @@ def main():
             if e.status == 403:
                 print(f"✗ Permission denied for label '{label_name}'")
                 print_permission_error()
-                if hasattr(e, 'data') and e.data and isinstance(e.data, dict):
+                if hasattr(e, 'data') and isinstance(getattr(e, 'data', None), dict):
                     print(f"  Error: {e.data.get('message', str(e))}")
             else:
                 print(f"✗ Error with label '{label_name}': {e}")
