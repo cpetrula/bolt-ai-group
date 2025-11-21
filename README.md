@@ -1,6 +1,10 @@
 Bolt AI Group – Salon AI Assistant (MVP Spec)
 
-> **📋 GitHub Issues Available!** This specification has been broken down into comprehensive GitHub Issues. See [ISSUES_SUMMARY.md](ISSUES_SUMMARY.md) for details and run `./quick-start.sh` to create all issues automatically.
+> **📋 GitHub Issues Available!** This specification has been broken down into comprehensive GitHub Issues. 
+> 
+> **Easiest method**: Go to [Actions tab](../../actions) → Run "Create GitHub Issues from README" workflow (no command line needed!)
+> 
+> **Alternative**: See [ISSUES_SUMMARY.md](ISSUES_SUMMARY.md) for all methods including command line.
 
 1. Project Overview
 

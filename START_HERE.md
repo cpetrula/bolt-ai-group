@@ -2,7 +2,21 @@
 
 Welcome! This is your **one-stop guide** to creating all GitHub Issues for the Bolt AI Salon Assistant project.
 
-## ⚡ Super Quick Start (TL;DR)
+## ⚡ Super Quick Start - GitHub Actions (No Command Line Needed!)
+
+**Easiest Method**: Create issues directly from GitHub web interface:
+
+1. Go to **[Actions tab](../../actions)**
+2. Click **"Create GitHub Issues from README"** workflow
+3. Click **"Run workflow"** → Type `create` → Click **"Run workflow"**
+4. Wait ~60 seconds for completion
+5. View issues at **[Issues tab](../../issues)**
+
+See **[GITHUB_ACTIONS_GUIDE.md](GITHUB_ACTIONS_GUIDE.md)** for detailed steps with screenshots.
+
+---
+
+## ⚡ Alternative: Command Line Method
 
 ```bash
 # 1. Get your GitHub token from: https://github.com/settings/tokens
@@ -64,19 +78,34 @@ When you run the script, it will create:
 
 ---
 
-## 🚀 Three Ways to Create Issues
+## 🚀 Four Ways to Create Issues
 
-### Method 1: Quick Start Script (Recommended)
+### Method 1: GitHub Actions (Easiest - No Command Line!) ⭐
+
+**Perfect if you don't have terminal access or don't want to run bash commands.**
+
+1. Go to [Actions tab](../../actions)
+2. Select "Create GitHub Issues from README"
+3. Click "Run workflow" → Type `create` → Run
+4. Wait ~60 seconds
+5. Done!
+
+**Pros**: No local setup, runs on GitHub, no tokens needed
+**Requires**: Nothing! Works from your browser
+
+See **[GITHUB_ACTIONS_GUIDE.md](GITHUB_ACTIONS_GUIDE.md)** for detailed instructions.
+
+### Method 2: Quick Start Script
 
 ```bash
 export GH_TOKEN=your_token_here
 ./quick-start.sh
 ```
 
-**Pros**: Easiest, checks prerequisites, user-friendly
-**Requires**: Python 3, PyGithub (auto-installed)
+**Pros**: Automated, checks prerequisites, user-friendly
+**Requires**: Python 3, PyGithub (auto-installed), terminal access
 
-### Method 2: Python Script Directly
+### Method 3: Python Script Directly
 
 ```bash
 pip install PyGithub
@@ -85,11 +114,11 @@ python3 create_github_issues.py
 ```
 
 **Pros**: Direct execution, full control
-**Requires**: Python 3, PyGithub
+**Requires**: Python 3, PyGithub, terminal access
 
-### Method 3: Bash Script with GitHub CLI (Alternative - Partial)
+### Method 4: Bash Script with GitHub CLI (Alternative - Partial)
 
-> **Note**: This bash script includes a subset of issues. For complete creation of all 16 issues, use Method 1 or 2.
+> **Note**: This bash script includes a subset of issues. For complete creation of all 16 issues, use Method 1, 2, or 3.
 
 ```bash
 gh auth login

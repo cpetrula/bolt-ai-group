@@ -3,11 +3,39 @@
 ║              Bolt AI Salon Assistant Project                         ║
 ╚══════════════════════════════════════════════════════════════════════╝
 
-✅ EVERYTHING IS READY! Follow these simple steps:
+✅ EVERYTHING IS READY! Choose your preferred method:
 
 ┌──────────────────────────────────────────────────────────────────────┐
-│ STEP 1: Get a GitHub Personal Access Token                          │
+│ METHOD 1: GitHub Actions (EASIEST - No Command Line!)               │
 └──────────────────────────────────────────────────────────────────────┘
+
+Perfect if you don't have terminal access or prefer using the web interface!
+
+1. Go to your repository's Actions tab:
+   https://github.com/cpetrula/bolt-ai-group/actions
+
+2. Click "Create GitHub Issues from README" workflow (left sidebar)
+
+3. Click "Run workflow" button (right side)
+
+4. Type "create" in the confirmation field
+
+5. Click the green "Run workflow" button
+
+6. Wait ~60 seconds for completion
+
+7. View your issues at:
+   https://github.com/cpetrula/bolt-ai-group/issues
+
+That's it! No tokens, no command line, no local setup needed!
+
+See GITHUB_ACTIONS_GUIDE.md for detailed visual guide.
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ METHOD 2: Command Line (Alternative)                                │
+└──────────────────────────────────────────────────────────────────────┘
+
+STEP 1: Get a GitHub Personal Access Token
 
 1. Go to: https://github.com/settings/tokens
 2. Click "Generate new token (classic)"
@@ -16,9 +44,7 @@
 5. Click "Generate token"
 6. COPY THE TOKEN (you won't see it again!)
 
-┌──────────────────────────────────────────────────────────────────────┐
-│ STEP 2: Run the Quick-Start Script                                  │
-└──────────────────────────────────────────────────────────────────────┘
+STEP 2: Run the Quick-Start Script
 
 Open your terminal and run:
 
