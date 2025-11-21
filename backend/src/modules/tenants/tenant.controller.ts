@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
+import { prisma } from '../../config/db';
 import * as tenantService from './tenant.service';
 import { AppError } from '../../middleware/errorHandler';
 
@@ -18,7 +19,6 @@ export const getCurrentUser = async (
     }
 
     // Get user from database with tenant information
-    const { prisma } = await import('../../config/db');
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
       select: {

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../modules/auth/jwt.utils';
+import { prisma } from '../config/db';
 import { AppError } from './errorHandler';
 
 // Extend Express Request type to include tenant information
@@ -40,7 +41,6 @@ export const multiTenantMiddleware = async (
           req.tenantId = payload.tenantId;
           
           // Load tenant details from database
-          const { prisma } = await import('../config/db');
           const tenant = await prisma.tenant.findUnique({
             where: { id: payload.tenantId },
             select: {
@@ -73,7 +73,6 @@ export const multiTenantMiddleware = async (
         req.tenantId = tenantId.trim();
 
         // Load tenant details from database
-        const { prisma } = await import('../config/db');
         const tenant = await prisma.tenant.findUnique({
           where: { id: req.tenantId },
           select: {

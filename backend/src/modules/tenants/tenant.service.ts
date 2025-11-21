@@ -1,4 +1,4 @@
-import { TenantStatus } from '@prisma/client';
+import { TenantStatus, Prisma } from '@prisma/client';
 import { prisma } from '../../config/db';
 import { AppError } from '../../middleware/errorHandler';
 import { CreateTenantData, UpdateTenantSettingsData, TenantSettings } from './tenant.model';
@@ -24,7 +24,7 @@ export const createTenant = async (data: CreateTenantData) => {
       name,
       businessType,
       status: TenantStatus.TRIAL,
-      settings: settings ? (settings as any) : null,
+      settings: settings ? (settings as Prisma.InputJsonValue) : undefined,
     },
     select: {
       id: true,
@@ -104,7 +104,7 @@ export const updateTenantSettings = async (
   const updatedTenant = await prisma.tenant.update({
     where: { id: tenantId },
     data: {
-      settings: settings as any,
+      settings: settings as Prisma.InputJsonValue,
     },
     select: {
       id: true,
