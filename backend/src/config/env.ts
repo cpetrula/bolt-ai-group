@@ -15,6 +15,9 @@ interface EnvConfig {
   stripeWebhookSecret: string;
   stripeMonthlyPriceId: string;
   stripeYearlyPriceId: string;
+  twilioAccountSid: string;
+  twilioAuthToken: string;
+  twilioPhoneNumber: string;
 }
 
 const getEnvVariable = (key: string, defaultValue?: string): string => {
@@ -37,4 +40,7 @@ export const env: EnvConfig = {
   stripeWebhookSecret: getEnvVariable('STRIPE_WEBHOOK_SECRET'),
   stripeMonthlyPriceId: getEnvVariable('STRIPE_MONTHLY_PRICE_ID'),
   stripeYearlyPriceId: getEnvVariable('STRIPE_YEARLY_PRICE_ID'),
+  twilioAccountSid: getEnvVariable('TWILIO_ACCOUNT_SID'),
+  twilioAuthToken: getEnvVariable('TWILIO_AUTH_TOKEN'),
+  twilioPhoneNumber: getEnvVariable('TWILIO_PHONE_NUMBER'),
 };
