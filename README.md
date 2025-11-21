@@ -1,4 +1,7 @@
 Bolt AI Group – Salon AI Assistant (MVP Spec)
+
+> **📋 GitHub Issues Available!** This specification has been broken down into comprehensive GitHub Issues. See [ISSUES_SUMMARY.md](ISSUES_SUMMARY.md) for details and run `./quick-start.sh` to create all issues automatically.
+
 1. Project Overview
 
 Goal:
