@@ -93,6 +93,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import api from '../services/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -113,11 +114,45 @@ const handleSubmit = async () => {
   error.value = ''
 
   try {
-    await authStore.signup(formData.value)
-    // After signup, redirect to billing or login
-    router.push('/login')
+    // Step 1: Create account
+    try {
+      await authStore.signup(formData.value)
+    } catch (signupErr: any) {
+      throw new Error(signupErr.response?.data?.message || 'Failed to create account. Please check your information and try again.')
+    }
+    
+    // Step 2: Login to get auth token for billing API
+    let loginResult
+    try {
+      loginResult = await authStore.login(formData.value.email, formData.value.password)
+    } catch (loginErr: any) {
+      throw new Error('Account created but login failed. Please try logging in manually.')
+    }
+    
+    if (loginResult.requires2FA) {
+      // If 2FA is required, redirect to login page
+      loading.value = false
+      router.push('/login')
+      return
+    }
+    
+    // Step 3: Create Stripe checkout session
+    try {
+      const checkoutResponse = await api.createCheckoutSession()
+      
+      if (checkoutResponse.url) {
+        // Keep loading state active during redirect to Stripe
+        window.location.href = checkoutResponse.url
+      } else {
+        // Fallback to dashboard if no checkout URL
+        loading.value = false
+        router.push('/app')
+      }
+    } catch (checkoutErr: any) {
+      throw new Error('Account created but checkout setup failed. Please set up billing from your dashboard.')
+    }
   } catch (err: any) {
-    error.value = err.response?.data?.message || 'Signup failed'
+    error.value = err.message || 'An unexpected error occurred. Please try again.'
     loading.value = false
   }
 }
