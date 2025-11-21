@@ -12,6 +12,27 @@ export const handleIncomingSMS = async (
   res: Response
 ): Promise<void> => {
   try {
+    // Validate Twilio signature for security
+    const signature = req.headers['x-twilio-signature'] as string;
+    if (!signature) {
+      logger.error('Missing Twilio signature');
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+    const isValid = twilioService.validateTwilioSignature(
+      signature,
+      url,
+      req.body
+    );
+
+    if (!isValid) {
+      logger.error('Invalid Twilio signature');
+      res.status(403).send('Forbidden');
+      return;
+    }
+
     const {
       MessageSid,
       From,
@@ -202,7 +223,13 @@ export const sendAppointmentConfirmation = async (
       throw new Error('Appointment not found or customer has no phone number');
     }
 
-    const message = `Hi ${appointment.customerName}, your appointment at ${appointment.tenant.name} is confirmed for ${appointment.appointmentDate.toLocaleDateString()} at ${appointment.startTime} with ${appointment.employee.name} for ${appointment.service.name}. See you then!`;
+    // Format date in a simple, clear format (MM/DD/YYYY)
+    const month = appointment.appointmentDate.getMonth() + 1;
+    const day = appointment.appointmentDate.getDate();
+    const year = appointment.appointmentDate.getFullYear();
+    const formattedDate = `${month}/${day}/${year}`;
+
+    const message = `Hi ${appointment.customerName}, your appointment at ${appointment.tenant.name} is confirmed for ${formattedDate} at ${appointment.startTime} with ${appointment.employee.name} for ${appointment.service.name}. See you then!`;
 
     await sendCustomerNotification(
       tenantId,
@@ -237,7 +264,24 @@ export const sendAppointmentReminder = async (
       throw new Error('Appointment not found or customer has no phone number');
     }
 
-    const message = `Reminder: You have an appointment at ${appointment.tenant.name} tomorrow at ${appointment.startTime} for ${appointment.service.name}. Reply CONFIRM to confirm or call us to reschedule.`;
+    // Calculate time difference
+    const now = new Date();
+    const appointmentDateTime = new Date(appointment.appointmentDate);
+    const hoursDiff = Math.floor((appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60));
+    
+    let timeReference = 'soon';
+    if (hoursDiff < 2) {
+      timeReference = 'in less than 2 hours';
+    } else if (hoursDiff < 24) {
+      timeReference = 'today';
+    } else if (hoursDiff < 48) {
+      timeReference = 'tomorrow';
+    } else {
+      const daysDiff = Math.floor(hoursDiff / 24);
+      timeReference = `in ${daysDiff} days`;
+    }
+
+    const message = `Reminder: You have an appointment at ${appointment.tenant.name} ${timeReference} at ${appointment.startTime} for ${appointment.service.name}. Reply CONFIRM to confirm or call us to reschedule.`;
 
     await sendCustomerNotification(
       tenantId,

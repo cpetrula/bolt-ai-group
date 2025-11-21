@@ -13,6 +13,27 @@ export const handleIncomingCall = async (
   res: Response
 ): Promise<void> => {
   try {
+    // Validate Twilio signature for security
+    const signature = req.headers['x-twilio-signature'] as string;
+    if (!signature) {
+      logger.error('Missing Twilio signature');
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+    const isValid = twilioService.validateTwilioSignature(
+      signature,
+      url,
+      req.body
+    );
+
+    if (!isValid) {
+      logger.error('Invalid Twilio signature');
+      res.status(403).send('Forbidden');
+      return;
+    }
+
     const {
       CallSid,
       From,
@@ -53,9 +74,7 @@ export const handleIncomingCall = async (
     // Generate TwiML response
     // In production, this would forward to AI assistant (Vapi, OpenAI, etc.)
     // For now, we provide a basic greeting
-    const greeting = `Hello and thank you for calling ${tenant.name}. 
-      This is your AI assistant. How may I help you today? 
-      You can ask about our services, pricing, hours, or to book an appointment.`;
+    const greeting = `Hello and thank you for calling ${tenant.name}. This is your AI assistant. How may I help you today? You can ask about our services, pricing, hours, or to book an appointment.`;
     
     const twiml = twilioService.generateVoiceResponse(greeting);
 
@@ -82,6 +101,27 @@ export const handleCallStatus = async (
   res: Response
 ): Promise<void> => {
   try {
+    // Validate Twilio signature for security
+    const signature = req.headers['x-twilio-signature'] as string;
+    if (!signature) {
+      logger.error('Missing Twilio signature');
+      res.status(403).send('Forbidden');
+      return;
+    }
+
+    const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+    const isValid = twilioService.validateTwilioSignature(
+      signature,
+      url,
+      req.body
+    );
+
+    if (!isValid) {
+      logger.error('Invalid Twilio signature');
+      res.status(403).send('Forbidden');
+      return;
+    }
+
     const {
       CallSid,
       CallStatus,

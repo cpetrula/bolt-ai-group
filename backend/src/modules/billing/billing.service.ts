@@ -200,6 +200,34 @@ export const updateSubscriptionFromStripe = async (
       data: { status: tenantStatus },
     });
 
+    // Provision phone number if subscription becomes active and tenant doesn't have one
+    if (
+      (subscriptionStatus === SubscriptionStatus.ACTIVE ||
+        subscriptionStatus === SubscriptionStatus.TRIALING) &&
+      !subscription.tenant.twilioPhoneNumber
+    ) {
+      try {
+        // Import telephony service here to avoid circular dependencies
+        const { provisionPhoneNumber } = await import('../telephony/twilio.service');
+        const phoneNumber = await provisionPhoneNumber(
+          subscription.tenantId,
+          subscription.tenant.name
+        );
+
+        await prisma.tenant.update({
+          where: { id: subscription.tenantId },
+          data: { twilioPhoneNumber: phoneNumber },
+        });
+
+        logger.info(
+          `Phone number ${phoneNumber} provisioned for tenant ${subscription.tenantId}`
+        );
+      } catch (phoneError) {
+        logger.error('Error provisioning phone number:', phoneError);
+        // Don't fail the subscription update if phone provisioning fails
+      }
+    }
+
     logger.info(
       `Subscription ${stripeSubscriptionId} updated to status ${subscriptionStatus}`
     );

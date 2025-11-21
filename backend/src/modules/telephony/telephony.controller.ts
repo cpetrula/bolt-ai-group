@@ -66,10 +66,18 @@ export const getCallLogs = async (
     if (startDate || endDate) {
       where.startTime = {};
       if (startDate) {
-        where.startTime.gte = new Date(startDate as string);
+        const start = new Date(startDate as string);
+        if (isNaN(start.getTime())) {
+          throw new AppError('Invalid startDate format. Use ISO 8601 format.', 400);
+        }
+        where.startTime.gte = start;
       }
       if (endDate) {
-        where.startTime.lte = new Date(endDate as string);
+        const end = new Date(endDate as string);
+        if (isNaN(end.getTime())) {
+          throw new AppError('Invalid endDate format. Use ISO 8601 format.', 400);
+        }
+        where.startTime.lte = end;
       }
     }
 
