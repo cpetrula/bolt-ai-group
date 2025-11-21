@@ -14,11 +14,24 @@ Requirements:
     
 Configuration:
     - GITHUB_REPOSITORY: Repository name (default: cpetrula/bolt-ai-group)
+
+GitHub Token Setup:
+    1. Go to: https://github.com/settings/tokens
+    2. Click "Generate new token (classic)"
+    3. Give it a name (e.g., "Issue Creator")
+    4. Select scope: "repo" (Full control of private repositories)
+    5. Click "Generate token"
+    6. Copy the token and set it as environment variable:
+       export GH_TOKEN=your_token_here
+    
+Note:
+    - The token MUST have write permissions (repo scope)
+    - Read-only tokens will result in 403 Forbidden errors
 """
 
 import os
 import sys
-from github import Github, GithubException
+from github import Github, GithubException, Auth
 
 # Configuration
 DEFAULT_REPOSITORY = "cpetrula/bolt-ai-group"
@@ -826,6 +839,12 @@ Create docker-compose.yml for easy local development setup.
 
 def main():
     """Main function to create GitHub issues."""
+    
+    def print_permission_error():
+        """Print helpful message for permission errors."""
+        print("  Make sure your GitHub token has 'repo' scope with write permissions")
+        print("  Generate a new token at: https://github.com/settings/tokens")
+    
     # Get GitHub token
     token = os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN")
     if not token:
@@ -839,7 +858,8 @@ def main():
     
     # Initialize GitHub client
     try:
-        g = Github(token)
+        auth = Auth.Token(token)
+        g = Github(auth=auth)
         # Get the repository (owner/repo format)
         repo = g.get_repo(repo_name)
         print(f"✓ Connected to repository: {repo.full_name}")
@@ -863,7 +883,13 @@ def main():
                 repo.create_label(label_name, color, description)
                 print(f"✓ Created label: {label_name}")
         except GithubException as e:
-            print(f"✗ Error with label '{label_name}': {e}")
+            if e.status == 403:
+                print(f"✗ Permission denied for label '{label_name}'")
+                print_permission_error()
+                if hasattr(e, 'data') and isinstance(getattr(e, 'data', None), dict):
+                    print(f"  Error: {e.data.get('message', str(e))}")
+            else:
+                print(f"✗ Error with label '{label_name}': {e}")
     
     # Create issues
     print("\n=== Creating issues ===")
@@ -881,7 +907,11 @@ def main():
             print(f"✓ Created #{issue.number}: {title}")
         except GithubException as e:
             failed_count += 1
-            print(f"✗ Failed to create '{title}': {e}")
+            if e.status == 403:
+                print(f"✗ Permission denied creating '{title}'")
+                print_permission_error()
+            else:
+                print(f"✗ Failed to create '{title}': {e}")
     
     # Summary
     print("\n=== Summary ===")
