@@ -1,6 +1,7 @@
 import { prisma } from '../../config/db';
 import { CallLogReport, CallLogFilters } from './call-log.model';
 import { AppointmentStatus } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime/library';
 
 /**
  * Get call logs report for a tenant
@@ -185,13 +186,13 @@ export const getRevenueReport = async (
   // Calculate total revenue
   const totalRevenue = completedAppointments.reduce(
     (sum, appointment) => sum.add(appointment.totalPrice),
-    new (require('@prisma/client').Prisma.Decimal)(0)
+    new Decimal(0)
   );
 
   // Group revenue by service
   const revenueByServiceMap = new Map<
     string,
-    { serviceName: string; revenue: any; count: number }
+    { serviceName: string; revenue: Decimal; count: number }
   >();
 
   completedAppointments.forEach((appointment) => {
