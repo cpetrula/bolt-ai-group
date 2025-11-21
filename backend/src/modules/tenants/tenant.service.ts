@@ -2,6 +2,8 @@ import { TenantStatus, Prisma } from '@prisma/client';
 import { prisma } from '../../config/db';
 import { AppError } from '../../middleware/errorHandler';
 import { CreateTenantData, UpdateTenantSettingsData, TenantSettings } from './tenant.model';
+import { seedDefaultServices } from '../services/service.service';
+import { logger } from '../../utils/logger';
 
 /**
  * Create a new tenant
@@ -36,6 +38,16 @@ export const createTenant = async (data: CreateTenantData) => {
       updatedAt: true,
     },
   });
+
+  // Seed default services for salon business type
+  if (businessType === 'salon') {
+    try {
+      await seedDefaultServices(tenant.id);
+    } catch (error) {
+      // Log error but don't fail tenant creation
+      logger.error('Failed to seed default services:', error);
+    }
+  }
 
   return tenant;
 };

@@ -10,6 +10,8 @@ import { multiTenantMiddleware } from './middleware/multiTenant';
 import healthRouter from './routes/health';
 import authRouter from './modules/auth/auth.routes';
 import tenantRouter from './modules/tenants/tenant.routes';
+import employeeRouter from './modules/employees/employee.routes';
+import serviceRouter from './modules/services/service.routes';
 
 // Create Express application
 const app: Application = express();
@@ -39,6 +41,8 @@ app.use(multiTenantMiddleware);
 app.use('/api', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api', tenantRouter);
+app.use('/api/employees', employeeRouter);
+app.use('/api/services', serviceRouter);
 
 // 404 handler
 app.use(notFoundHandler);
