@@ -51,6 +51,19 @@ Updates the `users` table to add tenant relationship.
 ### 003_rollback_user_with_tenant.sql
 Rollback script to remove tenant relationship from users table.
 
+### 004_add_employee_and_service_models.sql
+Creates tables for employee and service management.
+
+**Tables:**
+- `employees` - Stores employee/contractor information
+- `employee_schedules` - Stores employee work schedules (day of week, start/end times)
+- `services` - Stores services offered by the salon
+- `service_addons` - Stores optional add-ons for services
+- `employee_services` - Junction table linking employees to services they can perform
+
+### 004_rollback_employee_and_service_models.sql
+Rollback script to drop employee and service tables.
+
 ## Running Migrations
 
 ### Using MySQL CLI
@@ -106,6 +119,7 @@ DATABASE_URL="mysql://username:password@localhost:3306/bolt_ai_salon"
 | 001 | Add User model for authentication | 2025-11-21 |
 | 002 | Add Tenant model for multi-tenant architecture | 2025-11-21 |
 | 003 | Update User model with tenant relationship | 2025-11-21 |
+| 004 | Add Employee and Service models | 2025-11-21 |
 
 ## Troubleshooting
 
