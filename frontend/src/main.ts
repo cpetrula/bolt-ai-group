@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
+import Aura from '@primeuix/themes/aura';
 import router from './router'
 import { useAuthStore } from './stores/auth'
 
@@ -14,7 +15,9 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
-app.use(PrimeVue)
+app.use(PrimeVue, {
+    theme: {preset: Aura}
+})
 
 // Initialize auth state from localStorage
 const authStore = useAuthStore()
