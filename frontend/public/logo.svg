@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" fill="none">
+  <!-- Bolt icon -->
+  <g id="bolt-icon">
+    <path d="M45 15L25 40H35L30 65L50 35H40L45 15Z" fill="#2563EB" stroke="#1E40AF" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="37.5" cy="40" r="25" fill="none" stroke="#2563EB" stroke-width="2" opacity="0.3"/>
+  </g>
+  
+  <!-- Company name -->
+  <g id="company-name" fill="#1F2937">
+    <!-- Bolt -->
+    <text x="80" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700">Bolt</text>
+    
+    <!-- AI -->
+    <text x="80" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#2563EB">AI</text>
+    
+    <!-- Group -->
+    <text x="130" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700">Group</text>
+  </g>
+</svg>
