@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" fill="none">
+  <!-- Hardware Bolt (screw) icon -->
+  <g id="hardware-bolt-icon">
+    <!-- Hexagonal head -->
+    <path d="M 37.5 15 L 47.5 21 L 47.5 33 L 37.5 39 L 27.5 33 L 27.5 21 Z" fill="#2563EB" stroke="#1E40AF" stroke-width="1.5"/>
+    
+    <!-- Threaded shaft -->
+    <rect x="32.5" y="35" width="10" height="25" fill="#2563EB" stroke="#1E40AF" stroke-width="1"/>
+    
+    <!-- Thread lines -->
+    <line x1="32.5" y1="38" x2="42.5" y2="38" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="32.5" y1="42" x2="42.5" y2="42" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="32.5" y1="46" x2="42.5" y2="46" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="32.5" y1="50" x2="42.5" y2="50" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="32.5" y1="54" x2="42.5" y2="54" stroke="#1E40AF" stroke-width="1"/>
+    <line x1="32.5" y1="58" x2="42.5" y2="58" stroke="#1E40AF" stroke-width="1"/>
+    
+    <!-- Pointed end -->
+    <path d="M 32.5 60 L 37.5 65 L 42.5 60 Z" fill="#2563EB" stroke="#1E40AF" stroke-width="1"/>
+    
+    <!-- Center hex detail on head -->
+    <path d="M 37.5 22 L 41 24 L 41 29 L 37.5 31 L 34 29 L 34 24 Z" fill="none" stroke="#1E40AF" stroke-width="1"/>
+    
+    <!-- Subtle circle background -->
+    <circle cx="37.5" cy="40" r="28" fill="none" stroke="#2563EB" stroke-width="1.5" opacity="0.2"/>
+  </g>
+  
+  <!-- Company name -->
+  <g id="company-name" fill="#1F2937">
+    <!-- Bolt -->
+    <text x="80" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700">Bolt</text>
+    
+    <!-- AI -->
+    <text x="80" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#2563EB">AI</text>
+    
+    <!-- Group -->
+    <text x="130" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700">Group</text>
+  </g>
+</svg>
