@@ -20,94 +20,94 @@ const SettingsPage = () => import('../pages/SettingsPage.vue')
 const PublicLayout = () => import('../layouts/PublicLayout.vue')
 const DashboardLayout = () => import('../layouts/DashboardLayout.vue')
 
-const routes: RouteRecordRaw[] = [
+const routes = [
   {
     path: '/',
-    component: PublicLayout,
+    component,
     children: [
       {
         path: '',
         name: 'home',
-        component: HomePage,
+        component,
         meta: { title: 'Home - Bolt AI Group' }
       },
       {
         path: 'signup',
         name: 'signup',
-        component: SignUpPage,
+        component,
         meta: { title: 'Sign Up - Bolt AI Group' }
       },
       {
         path: 'login',
         name: 'login',
-        component: LoginPage,
+        component,
         meta: { title: 'Login - Bolt AI Group' }
       },
       {
         path: 'forgot-password',
         name: 'forgot-password',
-        component: ForgotPasswordPage,
+        component,
         meta: { title: 'Forgot Password - Bolt AI Group' }
       },
       {
         path: 'how-it-works',
         name: 'how-it-works',
-        component: HowItWorksPage,
+        component,
         meta: { title: 'How It Works - Bolt AI Group' }
       },
       {
         path: 'faq',
         name: 'faq',
-        component: FAQPage,
+        component,
         meta: { title: 'FAQ - Bolt AI Group' }
       },
     ]
   },
   {
     path: '/app',
-    component: DashboardLayout,
+    component,
     meta: { requiresAuth: true },
     children: [
       {
         path: '',
         name: 'dashboard',
-        component: DashboardPage,
+        component,
         meta: { title: 'Dashboard - Bolt AI Group' }
       },
       {
         path: 'employees',
         name: 'employees',
-        component: EmployeesPage,
+        component,
         meta: { title: 'Employees - Bolt AI Group' }
       },
       {
         path: 'services',
         name: 'services',
-        component: ServicesPage,
+        component,
         meta: { title: 'Services - Bolt AI Group' }
       },
       {
         path: 'appointments',
         name: 'appointments',
-        component: AppointmentsPage,
+        component,
         meta: { title: 'Appointments - Bolt AI Group' }
       },
       {
         path: 'billing',
         name: 'billing',
-        component: BillingPage,
+        component,
         meta: { title: 'Billing - Bolt AI Group' }
       },
       {
         path: 'reports',
         name: 'reports',
-        component: ReportsPage,
+        component,
         meta: { title: 'Reports - Bolt AI Group' }
       },
       {
         path: 'settings',
         name: 'settings',
-        component: SettingsPage,
+        component,
         meta: { title: 'Settings - Bolt AI Group' }
       },
     ]
@@ -129,7 +129,7 @@ router.beforeEach((to, _from, next) => {
   
   // Set page title
   if (to.meta.title) {
-    document.title = to.meta.title as string
+    document.title = to.meta.title
   }
 
   // Check if route requires authentication

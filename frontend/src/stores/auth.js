@@ -2,19 +2,12 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '../services/api'
 
-export interface User {
-  id: string
-  email: string
-  role: string
-  tenantId: string
-  is2faEnabled: boolean
-}
 
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
-  const token = ref<string | null>(null)
+  const user = ref(null)
+  const token = ref(null)
   const loading = ref(false)
-  const error = ref<string | null>(null)
+  const error = ref(null)
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
   const isOwner = computed(() => user.value?.role === 'owner')
@@ -31,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function login(email: string, password: string) {
+  async function login(email, password) {
     loading.value = true
     error.value = null
     
@@ -52,14 +45,14 @@ export const useAuthStore = defineStore('auth', () => {
       
       loading.value = false
       return { success: true }
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || 'Login failed'
       loading.value = false
       throw err
     }
   }
 
-  async function verify2FA(code: string) {
+  async function verify2FA(code) {
     loading.value = true
     error.value = null
     
@@ -74,14 +67,14 @@ export const useAuthStore = defineStore('auth', () => {
       
       loading.value = false
       return { success: true }
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || '2FA verification failed'
       loading.value = false
       throw err
     }
   }
 
-  async function signup(data: any) {
+  async function signup(data) {
     loading.value = true
     error.value = null
     
@@ -89,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await api.signup(data)
       loading.value = false
       return response
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || 'Signup failed'
       loading.value = false
       throw err

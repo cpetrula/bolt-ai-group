@@ -7,7 +7,7 @@ class ApiClient {
 
   constructor() {
     this.client = axios.create({
-      baseURL: API_URL,
+      baseURL,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -15,7 +15,7 @@ class ApiClient {
 
     // Request interceptor to add JWT token
     this.client.interceptors.request.use(
-      (config: InternalAxiosRequestConfig) => {
+      (config) => {
         const token = localStorage.getItem('auth_token')
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`
@@ -42,27 +42,27 @@ class ApiClient {
     )
   }
 
-  get axiosInstance(): AxiosInstance {
+  get axiosInstance() {
     return this.client
   }
 
   // Auth endpoints
-  async login(email: string, password: string) {
+  async login(email, password) {
     const response = await this.client.post('/auth/login', { email, password })
     return response.data
   }
 
-  async signup(data: any) {
+  async signup(data) {
     const response = await this.client.post('/auth/signup', data)
     return response.data
   }
 
-  async forgotPassword(email: string) {
+  async forgotPassword(email) {
     const response = await this.client.post('/auth/forgot-password', { email })
     return response.data
   }
 
-  async resetPassword(token: string, password: string) {
+  async resetPassword(token, password) {
     const response = await this.client.post('/auth/reset-password', { token, password })
     return response.data
   }
@@ -72,7 +72,7 @@ class ApiClient {
     return response.data
   }
 
-  async verify2FA(token: string) {
+  async verify2FA(token) {
     const response = await this.client.post('/auth/2fa/verify', { token })
     return response.data
   }
@@ -89,7 +89,7 @@ class ApiClient {
     return response.data
   }
 
-  async updateTenantSettings(data: any) {
+  async updateTenantSettings(data) {
     const response = await this.client.patch('/tenant/settings', data)
     return response.data
   }
@@ -100,17 +100,17 @@ class ApiClient {
     return response.data
   }
 
-  async createEmployee(data: any) {
+  async createEmployee(data) {
     const response = await this.client.post('/employees', data)
     return response.data
   }
 
-  async updateEmployee(id: string, data: any) {
+  async updateEmployee(id, data) {
     const response = await this.client.patch(`/employees/${id}`, data)
     return response.data
   }
 
-  async deleteEmployee(id: string) {
+  async deleteEmployee(id) {
     const response = await this.client.delete(`/employees/${id}`)
     return response.data
   }
@@ -121,17 +121,17 @@ class ApiClient {
     return response.data
   }
 
-  async createService(data: any) {
+  async createService(data) {
     const response = await this.client.post('/services', data)
     return response.data
   }
 
-  async updateService(id: string, data: any) {
+  async updateService(id, data) {
     const response = await this.client.patch(`/services/${id}`, data)
     return response.data
   }
 
-  async deleteService(id: string) {
+  async deleteService(id) {
     const response = await this.client.delete(`/services/${id}`)
     return response.data
   }
@@ -142,17 +142,17 @@ class ApiClient {
     return response.data
   }
 
-  async createAppointment(data: any) {
+  async createAppointment(data) {
     const response = await this.client.post('/appointments', data)
     return response.data
   }
 
-  async updateAppointment(id: string, data: any) {
+  async updateAppointment(id, data) {
     const response = await this.client.patch(`/appointments/${id}`, data)
     return response.data
   }
 
-  async deleteAppointment(id: string) {
+  async deleteAppointment(id) {
     const response = await this.client.delete(`/appointments/${id}`)
     return response.data
   }

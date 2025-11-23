@@ -2,26 +2,11 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import api from '../services/api'
 
-export interface Appointment {
-  id: string
-  customerId: string
-  customerName: string
-  customerPhone: string
-  employeeId: string
-  employeeName: string
-  serviceId: string
-  serviceName: string
-  scheduledAt: string
-  duration: number
-  status: 'booked' | 'completed' | 'canceled' | 'no-show'
-  notes?: string
-  createdAt: string
-}
 
 export const useAppointmentsStore = defineStore('appointments', () => {
-  const appointments = ref<Appointment[]>([])
+  const appointments = ref([])
   const loading = ref(false)
-  const error = ref<string | null>(null)
+  const error = ref(null)
 
   async function fetchAppointments(params?: any) {
     loading.value = true
@@ -31,14 +16,14 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       const response = await api.getAppointments(params)
       appointments.value = response.appointments || []
       loading.value = false
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch appointments'
       loading.value = false
       throw err
     }
   }
 
-  async function createAppointment(data: Partial<Appointment>) {
+  async function createAppointment(data) {
     loading.value = true
     error.value = null
     
@@ -47,14 +32,14 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       appointments.value.push(response.appointment)
       loading.value = false
       return response
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || 'Failed to create appointment'
       loading.value = false
       throw err
     }
   }
 
-  async function updateAppointment(id: string, data: Partial<Appointment>) {
+  async function updateAppointment(id, data) {
     loading.value = true
     error.value = null
     
@@ -66,14 +51,14 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       }
       loading.value = false
       return response
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || 'Failed to update appointment'
       loading.value = false
       throw err
     }
   }
 
-  async function deleteAppointment(id: string) {
+  async function deleteAppointment(id) {
     loading.value = true
     error.value = null
     
@@ -81,7 +66,7 @@ export const useAppointmentsStore = defineStore('appointments', () => {
       await api.deleteAppointment(id)
       appointments.value = appointments.value.filter(a => a.id !== id)
       loading.value = false
-    } catch (err: any) {
+    } catch (err) {
       error.value = err.response?.data?.message || 'Failed to delete appointment'
       loading.value = false
       throw err
