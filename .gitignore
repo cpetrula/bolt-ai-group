@@ -159,3 +159,11 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Ngrok
+.ngrok
+ngrok.log
+ngrok.yml
+
+# Environment backups created by start-ngrok.sh
+*.env.backup.*
