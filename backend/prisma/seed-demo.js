@@ -97,7 +97,7 @@ const demoEmployees = [
     name: 'Sarah Johnson',
     role: 'Senior Stylist',
     phone: '+15555550101',
-    email: 'sarah@demospalon.example.com',
+    email: 'sarah@demosalon.example.com',
     isActive: true,
     schedules: [
       { dayOfWeek: 1, startTime: '09:00', endTime: '17:00' }, // Monday
@@ -111,7 +111,7 @@ const demoEmployees = [
     name: 'Michael Chen',
     role: 'Stylist',
     phone: '+15555550102',
-    email: 'michael@demospalon.example.com',
+    email: 'michael@demosalon.example.com',
     isActive: true,
     schedules: [
       { dayOfWeek: 2, startTime: '10:00', endTime: '18:00' }, // Tuesday
@@ -125,7 +125,7 @@ const demoEmployees = [
     name: 'Emily Rodriguez',
     role: 'Color Specialist',
     phone: '+15555550103',
-    email: 'emily@demospalon.example.com',
+    email: 'emily@demosalon.example.com',
     isActive: true,
     schedules: [
       { dayOfWeek: 1, startTime: '10:00', endTime: '18:00' }, // Monday
