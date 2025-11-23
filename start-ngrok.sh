@@ -81,7 +81,8 @@ get_ngrok_url() {
     local attempt=1
     
     while [ $attempt -le $max_attempts ]; do
-        local url=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null | grep -o 'https://[a-zA-Z0-9-]*\.ngrok[^"]*' | head -1)
+        # Try to extract URL more robustly, handling various ngrok domain formats
+        local url=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null | grep -o 'https://[a-zA-Z0-9-]*\.ngrok[^",:}]*' | head -1)
         if [ -n "$url" ]; then
             echo "$url"
             return 0
@@ -107,9 +108,15 @@ update_env() {
     cp "$env_file" "$env_file.backup.$(date +%s)"
     
     # Update or add NGROK_URL
+    # Use different sed syntax for macOS vs Linux compatibility
     if grep -q "^NGROK_URL=" "$env_file"; then
-        sed -i.tmp "s|^NGROK_URL=.*|NGROK_URL=$ngrok_url|g" "$env_file"
-        rm -f "$env_file.tmp"
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            # macOS
+            sed -i '' "s|^NGROK_URL=.*|NGROK_URL=$ngrok_url|g" "$env_file"
+        else
+            # Linux
+            sed -i "s|^NGROK_URL=.*|NGROK_URL=$ngrok_url|g" "$env_file"
+        fi
         print_success "Updated NGROK_URL in $env_file"
     else
         echo "" >> "$env_file"
@@ -143,8 +150,8 @@ display_webhooks() {
     echo "💳 Stripe Webhook:"
     echo "   $ngrok_url/api/webhooks/stripe"
     echo
-    echo "🤖 Vapi/AI Webhook:"
-    echo "   $ngrok_url/api/ai"
+    echo "🤖 Vapi Webhook:"
+    echo "   $ngrok_url/api/ai/webhooks/vapi"
     echo
     echo -e "${BLUE}========================================${NC}"
     echo

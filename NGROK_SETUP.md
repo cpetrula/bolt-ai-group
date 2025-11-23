@@ -280,7 +280,7 @@ STRIPE_WEBHOOK_BASE_URL=https://abc123def456.ngrok-free.app
    - Go to your Assistant settings
    - Under **Server URL**, set:
      ```
-     https://abc123def456.ngrok-free.app/api/ai
+     https://abc123def456.ngrok-free.app/api/ai/webhooks/vapi
      ```
    - Save changes
 
