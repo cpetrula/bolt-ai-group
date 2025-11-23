@@ -6,6 +6,11 @@ Bolt AI Group – Salon AI Assistant (MVP Spec)
 > 
 > **Alternative**: See [ISSUES_SUMMARY.md](ISSUES_SUMMARY.md) for all methods including command line.
 
+> **🚀 Quick Start Guides:**
+> - **Development Setup**: See [docs/SETUP.md](docs/SETUP.md) for complete installation instructions
+> - **Ngrok for Local Testing**: See [NGROK_SETUP.md](NGROK_SETUP.md) for webhook testing with Twilio, Stripe, and Vapi
+> - **Quick Start Script**: Run `./start-ngrok.sh` to automatically start ngrok tunnel
+
 1. Project Overview
 
 Goal:

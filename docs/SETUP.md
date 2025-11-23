@@ -16,7 +16,7 @@ Before you begin, ensure you have the following installed on your system:
 - **VS Code**: Code editor with good Vue/JavaScript support
 - **Postman** or **Insomnia**: API testing
 - **MySQL Workbench**: Database management
-- **ngrok**: For testing webhooks locally
+- **ngrok**: For testing webhooks locally ([Setup Guide](../NGROK_SETUP.md))
 
 ## Project Structure
 
@@ -313,6 +313,11 @@ curl http://localhost:3000/api/employees \
 
 ## Optional: Third-Party Service Setup
 
+> **🔗 Ngrok Required for Webhooks**  
+> Most of these services require webhooks that need to reach your local server.  
+> **See [NGROK_SETUP.md](../NGROK_SETUP.md) for complete Ngrok setup instructions.**  
+> Quick start: `./start-ngrok.sh`
+
 ### Twilio Setup
 
 1. Sign up at [Twilio](https://www.twilio.com/)
@@ -325,10 +330,14 @@ curl http://localhost:3000/api/employees \
 **For local development**, use ngrok to expose your local server:
 
 ```bash
+# Option 1: Use the automated script (recommended)
+./start-ngrok.sh
+
+# Option 2: Run ngrok manually
 ngrok http 3000
 ```
 
-Use the ngrok URL in Twilio webhook configuration.
+Use the ngrok URL in Twilio webhook configuration. See [NGROK_SETUP.md](../NGROK_SETUP.md) for detailed instructions.
 
 ### Stripe Setup
 
@@ -337,8 +346,10 @@ Use the ngrok URL in Twilio webhook configuration.
 3. Create products and prices:
    - Monthly: $295/month
    - Yearly: $2,832/year
-4. Configure webhook endpoint: `http://your-domain/api/webhooks/stripe`
+4. Configure webhook endpoint: `http://your-ngrok-url/api/webhooks/stripe` (use your ngrok URL)
 5. Add credentials to `.env`
+
+**Note:** For local testing, you need ngrok running. See [NGROK_SETUP.md](../NGROK_SETUP.md) for webhook configuration.
 
 ### OpenAI Setup
 
