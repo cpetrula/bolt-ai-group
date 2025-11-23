@@ -1,11 +1,11 @@
 # Bolt AI Salon Assistant - Backend
 
-Backend API server for the Bolt AI Salon Assistant application. Built with Node.js, TypeScript, Express, and Prisma ORM.
+Backend API server for the Bolt AI Salon Assistant application. Built with Node.js, Express, and Prisma ORM.
 
 ## 🚀 Tech Stack
 
 - **Runtime**: Node.js 18+
-- **Language**: TypeScript
+- **Language**: JavaScript (migrated from TypeScript)
 - **Framework**: Express.js
 - **Database**: MySQL
 - **ORM**: Prisma
@@ -18,26 +18,25 @@ Backend API server for the Bolt AI Salon Assistant application. Built with Node.
 ```
 backend/
 ├── src/
-│   ├── app.ts                 # Main application entry point
+│   ├── app.js                 # Main application entry point
 │   ├── config/
-│   │   ├── env.ts             # Environment variables configuration
-│   │   └── db.ts              # Database connection setup
+│   │   ├── env.js             # Environment variables configuration
+│   │   └── db.js              # Database connection setup
 │   ├── middleware/
-│   │   ├── errorHandler.ts    # Error handling middleware
-│   │   ├── logger.ts          # Request logging middleware
-│   │   └── multiTenant.ts     # Multi-tenant context middleware
+│   │   ├── errorHandler.js    # Error handling middleware
+│   │   ├── logger.js          # Request logging middleware
+│   │   └── multiTenant.js     # Multi-tenant context middleware
 │   ├── routes/
-│   │   └── health.ts          # Health check endpoint
+│   │   └── health.js          # Health check endpoint
 │   └── utils/
-│       └── logger.ts          # Winston logger configuration
+│       └── logger.js          # Winston logger configuration
 ├── prisma/
 │   └── schema.prisma          # Prisma database schema
-├── dist/                      # Compiled JavaScript (generated)
 ├── logs/                      # Application logs (generated)
+├── app.js                     # Convenience wrapper (redirects to src/app.js)
 ├── .env                       # Environment variables (do not commit)
 ├── .env.example               # Example environment variables
 ├── package.json
-├── tsconfig.json
 └── README.md
 ```
 
@@ -73,20 +72,31 @@ backend/
 
 ## 🏃 Running the Application
 
-### Development Mode
+### Recommended: Using npm scripts
+
+**Development Mode (with hot-reload):**
 ```bash
 npm run dev
 ```
 The server will start with hot-reload enabled on `http://localhost:3000`
 
-### Production Build
+**Production Mode:**
 ```bash
-# Build TypeScript to JavaScript
-npm run build
-
-# Start the production server
 npm start
 ```
+
+### Alternative: Direct execution
+
+You can also run the server directly using Node.js:
+```bash
+# From the backend directory
+node app.js
+
+# Or specify the full path
+node src/app.js
+```
+
+> **Note**: Using `npm run dev` or `npm start` is the recommended approach as defined in `package.json`.
 
 ## 🗄️ Database Management
 
