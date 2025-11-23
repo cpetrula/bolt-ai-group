@@ -33,6 +33,7 @@ app.use(
 );
 
 // Routers
+app.use('/api', healthRouter);
 app.use('/api/employees', employeeRouter);
 app.use('/api/services', serviceRouter);
 app.use('/api', appointmentRouter);
