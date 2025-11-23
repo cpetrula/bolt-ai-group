@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
 // Lazy load components
@@ -23,91 +23,91 @@ const DashboardLayout = () => import('../layouts/DashboardLayout.vue')
 const routes = [
   {
     path: '/',
-    component,
+    component: PublicLayout,
     children: [
       {
         path: '',
         name: 'home',
-        component,
+        component: HomePage,
         meta: { title: 'Home - Bolt AI Group' }
       },
       {
         path: 'signup',
         name: 'signup',
-        component,
+        component: SignUpPage,
         meta: { title: 'Sign Up - Bolt AI Group' }
       },
       {
         path: 'login',
         name: 'login',
-        component,
+        component: LoginPage,
         meta: { title: 'Login - Bolt AI Group' }
       },
       {
         path: 'forgot-password',
         name: 'forgot-password',
-        component,
+        component: ForgotPasswordPage,
         meta: { title: 'Forgot Password - Bolt AI Group' }
       },
       {
         path: 'how-it-works',
         name: 'how-it-works',
-        component,
+        component: HowItWorksPage,
         meta: { title: 'How It Works - Bolt AI Group' }
       },
       {
         path: 'faq',
         name: 'faq',
-        component,
+        component: FAQPage,
         meta: { title: 'FAQ - Bolt AI Group' }
       },
     ]
   },
   {
     path: '/app',
-    component,
+    component: DashboardLayout,
     meta: { requiresAuth: true },
     children: [
       {
         path: '',
         name: 'dashboard',
-        component,
+        component: DashboardPage,
         meta: { title: 'Dashboard - Bolt AI Group' }
       },
       {
         path: 'employees',
         name: 'employees',
-        component,
+        component: EmployeesPage,
         meta: { title: 'Employees - Bolt AI Group' }
       },
       {
         path: 'services',
         name: 'services',
-        component,
+        component: ServicesPage,
         meta: { title: 'Services - Bolt AI Group' }
       },
       {
         path: 'appointments',
         name: 'appointments',
-        component,
+        component: AppointmentsPage,
         meta: { title: 'Appointments - Bolt AI Group' }
       },
       {
         path: 'billing',
         name: 'billing',
-        component,
+        component: BillingPage,
         meta: { title: 'Billing - Bolt AI Group' }
       },
       {
         path: 'reports',
         name: 'reports',
-        component,
+        component: ReportsPage,
         meta: { title: 'Reports - Bolt AI Group' }
       },
       {
         path: 'settings',
         name: 'settings',
-        component,
+        component: SettingsPage,
         meta: { title: 'Settings - Bolt AI Group' }
       },
     ]

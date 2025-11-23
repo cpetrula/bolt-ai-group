@@ -1,13 +1,11 @@
-import axios, { type AxiosInstance, type InternalAxiosRequestConfig } from 'axios'
+import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
 class ApiClient {
-  private client: AxiosInstance
-
   constructor() {
     this.client = axios.create({
-      baseURL,
+      baseURL: API_URL,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -137,7 +135,7 @@ class ApiClient {
   }
 
   // Appointments endpoints
-  async getAppointments(params?: any) {
+  async getAppointments(params) {
     const response = await this.client.get('/appointments', { params })
     return response.data
   }
@@ -174,17 +172,17 @@ class ApiClient {
   }
 
   // Reports endpoints
-  async getCallsReport(params?: any) {
+  async getCallsReport(params) {
     const response = await this.client.get('/reports/calls', { params })
     return response.data
   }
 
-  async getAppointmentsReport(params?: any) {
+  async getAppointmentsReport(params) {
     const response = await this.client.get('/reports/appointments', { params })
     return response.data
   }
 
-  async getRevenueReport(params?: any) {
+  async getRevenueReport(params) {
     const response = await this.client.get('/reports/revenue', { params })
     return response.data
   }

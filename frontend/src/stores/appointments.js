@@ -8,7 +8,7 @@ export const useAppointmentsStore = defineStore('appointments', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  async function fetchAppointments(params?: any) {
+  async function fetchAppointments(params) {
     loading.value = true
     error.value = null
     
