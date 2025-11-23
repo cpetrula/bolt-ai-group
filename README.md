@@ -140,7 +140,9 @@ bolt-ai-salon-assistant/
 │  ├─ ARCHITECTURE.md
 │  ├─ API.md
 │  ├─ DATA_MODEL.md
-│  └─ AI_FLOW.md
+│  ├─ AI_FLOW.md
+│  ├─ SETUP.md
+│  └─ DEPLOYMENT.md
 │
 ├─ .env.example
 ├─ docker-compose.yml (optional)
