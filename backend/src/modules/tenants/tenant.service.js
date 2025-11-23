@@ -146,7 +146,7 @@ const updateTenantStatus = async (
   }
 
   // Validate status transition
-  const validTransitions, TenantStatus[]> = {
+  const validTransitions = {
     TRIAL: [TenantStatus.ACTIVE, TenantStatus.SUSPENDED],
     ACTIVE: [TenantStatus.INACTIVE, TenantStatus.SUSPENDED],
     INACTIVE: [TenantStatus.ACTIVE, TenantStatus.SUSPENDED],

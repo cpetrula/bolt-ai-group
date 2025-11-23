@@ -1,14 +1,8 @@
 const { SubscriptionStatus, SubscriptionPlan } = require('@prisma/client');
 
 /**
- * Subscription model types
+ * Subscription model types removed - using Prisma models directly
  */
-/**
- * Create checkout session data
- */
-/**
- * Create portal session data
- */
-/**
- * Subscription response
- */
+
+module.exports = { SubscriptionStatus, SubscriptionPlan };
+

@@ -1,17 +1,7 @@
 /**
- * AI Provider Interface
- * Defines the contract for pluggable AI implementations
+ * AI Provider Interface definitions removed
+ * JavaScript doesn't require explicit interfaces - duck typing is used
  */
 
-;
-}
+module.exports = {};
 
-/**
- * Base interface for AI providers
- */
-/**
- * Interface for call orchestration providers (e.g., Vapi)
- */
-/**
- * Interface for Text-to-Speech providers
- */

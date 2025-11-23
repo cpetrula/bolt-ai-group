@@ -75,7 +75,7 @@ class OpenAIService {
    */
   async detectIntent(
     userInput,
-    context?: Record<string, any>
+    context, any>
   ) {
     const systemPrompt = `You are an intent detection system for a salon booking assistant. 
 Analyze the user's input and return ONLY a JSON object with the following structure:

@@ -51,7 +51,7 @@ const getCallLogsReport = async (
  */
 const getAppointmentsReport = async (
   tenantId,
-  filters?: { startDate?: string; endDate?: string }
+  filters; endDate?: string }
 ) => {
   const now = new Date();
   const whereClause = { tenantId };
@@ -151,7 +151,7 @@ const getAppointmentsReport = async (
  */
 const getRevenueReport = async (
   tenantId,
-  filters?: { startDate?: string; endDate?: string }
+  filters; endDate?: string }
 ) => {
   const whereClause = {
     tenantId,

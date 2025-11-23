@@ -18,10 +18,10 @@ const { timeToMinutes,
 const getAppointments = async (
   tenantId,
   filters?: {
-    employeeId?: string;
-    status?: AppointmentStatus;
-    startDate?: string;
-    endDate?: string;
+    employeeId;
+    status;
+    startDate;
+    endDate;
   }
 ) => {
   const whereClause = { tenantId };
