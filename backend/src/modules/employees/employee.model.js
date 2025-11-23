@@ -1,21 +1,6 @@
 /**
- * Employee model types
+ * Employee model types and interfaces removed - using Prisma models directly
  */
-/**
- * Employee schedule
- */
-/**
- * Create employee data
- */
-/**
- * Update employee data
- */
-/**
- * Employee schedule input
- */
-/**
- * Employee with schedules
- */
-export interface EmployeeWithSchedules extends Employee {
-  schedules: EmployeeSchedule[];
-}
+
+module.exports = {};
+

@@ -5,29 +5,9 @@ const stripeService = require('./stripe.service');
 const billingService = require('./billing.service');
 
 /**
- * Extended Stripe Subscription interface to include properties
- * that exist in the API but may not be in the type definitions
- */
-interface StripeSubscriptionExtended extends Stripe.Subscription {
-  current_period_start: number;
-  current_period_end: number;
-  cancel_at_period_end: boolean;
-}
-
-/**
- * Extended Stripe Invoice interface to include subscription property
- * that exists in the API but may not be in the type definitions
- */
-interface StripeInvoiceExtended extends Stripe.Invoice {
-  subscription: string | Stripe.Subscription | null;
-}
-
-/**
  * Handle Stripe webhook events
  */
-const handleWebhook = async (
-  req,
-  res) => {
+const handleWebhook = async (req, res) => {
   const signature = req.headers['stripe-signature'];
 
   if (!signature) {

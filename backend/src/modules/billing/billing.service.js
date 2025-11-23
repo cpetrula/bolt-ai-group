@@ -34,8 +34,7 @@ const getSubscription = async (
 /**
  * Create checkout session for new subscription
  */
-const createCheckoutSession = async (
-  data) { url: string }> => {
+const createCheckoutSession = async (data) => {
   const { tenantId, plan, successUrl, cancelUrl } = data;
 
   // Check if tenant exists
@@ -104,8 +103,7 @@ const createCheckoutSession = async (
 /**
  * Create customer portal session
  */
-const createPortalSession = async (
-  data) { url: string }> => {
+const createPortalSession = async (data) => {
   const { tenantId, returnUrl } = data;
 
   // Get subscription with Stripe customer ID
@@ -143,7 +141,7 @@ const updateSubscriptionFromStripe = async (
   cancelAtPeriodEnd) => {
   try {
     // Map Stripe status to our enum
-    let subscriptionStatus: SubscriptionStatus;
+    let subscriptionStatus;
     switch (status) {
       case 'active':
         subscriptionStatus = SubscriptionStatus.ACTIVE;
@@ -177,7 +175,7 @@ const updateSubscriptionFromStripe = async (
     });
 
     // Update tenant status based on subscription status
-    let tenantStatus: TenantStatus;
+    let tenantStatus;
     if (
       subscriptionStatus === SubscriptionStatus.ACTIVE ||
       subscriptionStatus === SubscriptionStatus.TRIALING

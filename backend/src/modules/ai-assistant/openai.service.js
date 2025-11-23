@@ -11,12 +11,10 @@ const { AppError } = require('../../middleware/errorHandler');
  * OpenAI Service Implementation
  * Provides LLM and NLU capabilities using OpenAI's API
  */
-class OpenAIService implements AIProvider {
-  private apiKey: string;
-  private baseUrl: string = 'https://api.openai.com/v1';
-
+class OpenAIService {
   constructor() {
     this.apiKey = env.openaiApiKey || '';
+    this.baseUrl = 'https://api.openai.com/v1';
     if (!this.apiKey) {
       logger.warn('OpenAI API key not configured');
     }

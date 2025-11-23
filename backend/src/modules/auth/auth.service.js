@@ -177,7 +177,7 @@ const resetPassword = async (data) => {
   const { token, newPassword } = data;
 
   // Verify token
-  let userId: string;
+  let userId;
   try {
     userId = verifyResetToken(token);
   } catch (error) {

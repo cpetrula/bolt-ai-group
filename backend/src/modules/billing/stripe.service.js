@@ -142,13 +142,12 @@ const constructWebhookEvent = (
       signature,
       env.stripeWebhookSecret
     );
-    return event;
+        return event;
   } catch (error) {
     logger.error('Error constructing webhook event:', error);
     throw error;
   }
 };
 
-export { stripe, getPriceId };
+module.exports = { stripe, getPriceId, createCustomer, createCheckoutSession, createPortalSession, getSubscription, cancelSubscription, constructWebhookEvent };
 
-module.exports = { createCustomer, createCheckoutSession, createPortalSession, getSubscription, cancelSubscription, constructWebhookEvent };

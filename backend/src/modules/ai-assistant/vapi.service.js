@@ -7,13 +7,10 @@ const { AppError } = require('../../middleware/errorHandler');
  * Vapi Service Implementation
  * Handles call orchestration using Vapi's API
  */
-class VapiService implements CallOrchestrationProvider {
-  private apiKey: string;
-  private baseUrl: string = 'https://api.vapi.ai';
-  private assistantId: string;
-
+class VapiService {
   constructor() {
     this.apiKey = env.vapiApiKey || '';
+    this.baseUrl = 'https://api.vapi.ai';
     this.assistantId = env.vapiAssistantId || '';
     if (!this.apiKey) {
       logger.warn('Vapi API key not configured');
