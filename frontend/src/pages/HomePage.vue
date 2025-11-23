@@ -47,12 +47,12 @@
               Try it now! Call our demo number:
             </p>
             <a 
-              href="tel:+15555551234" 
+              href="tel:+14242839238" 
               class="inline-flex items-center justify-center text-4xl sm:text-5xl font-bold text-primary-600 hover:text-primary-700 transition-colors mb-4 focus:outline-none focus:ring-4 focus:ring-primary-300 rounded-lg px-6 py-3"
               aria-label="Call demo number +1-555-555-1234"
             >
               <i class="pi pi-phone mr-4" aria-hidden="true"></i>
-              +1-555-555-1234
+              +1-424-283-9238
             </a>
             <p class="text-secondary-600 text-lg font-medium">
               <strong class="text-primary-600">Call now to hear exactly what your customers will experience!</strong>
@@ -303,12 +303,12 @@
             <i class="pi pi-arrow-right ml-2" aria-hidden="true"></i>
           </router-link>
           <a
-            href="tel:+15555551234"
+            href="tel:+14242839238"
             class="inline-flex items-center justify-center border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-secondary-900 transition-all focus:outline-none focus:ring-4 focus:ring-white"
             aria-label="Call demo number to try now"
           >
             <i class="pi pi-phone mr-2" aria-hidden="true"></i>
-            Try Demo: +1-555-555-1234
+            Try Demo: +1-424-283-9238
           </a>
         </div>
       </div>
