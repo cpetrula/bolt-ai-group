@@ -72,7 +72,7 @@ const resetPasswordValidation = [
  */
 const twoFactorValidation = [
   body('token')
-    .isLength({ min, max: 6 })
+    .isLength({ min: 6, max: 6 })
     .isNumeric()
     .withMessage('2FA token must be a 6-digit number'),
   validateRequest,
