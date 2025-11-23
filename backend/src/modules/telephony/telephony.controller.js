@@ -29,7 +29,7 @@ const sendSMSValidation = [
     .withMessage('Phone number must be in E.164 format'),
   body('message')
     .isString()
-    .isLength({ min, max: 1600 })
+    .isLength({ min: 1, max: 1600 })
     .withMessage('Message must be between 1 and 1600 characters'),
   validateRequest,
 ];

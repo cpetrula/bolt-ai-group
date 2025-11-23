@@ -11,7 +11,7 @@
         <div class="flex justify-between h-16">
           <div class="flex items-center">
             <router-link to="/" class="flex items-center gap-3" aria-label="TONRIS Home">
-              <img src="/logo.svg" alt="TONRIS Logo" class="h-10" />
+              <img src="/logo.png" alt="TONRIS Logo" class="h-10" />
             </router-link>
           </div>
           <div class="flex items-center space-x-1 sm:space-x-4">

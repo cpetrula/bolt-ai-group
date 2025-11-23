@@ -246,7 +246,7 @@ const updateEmployeeValidation = [
 const updateEmployeeScheduleValidation = [
   body('schedules').isArray().withMessage('Schedules must be an array'),
   body('schedules.*.dayOfWeek')
-    .isInt({ min, max: 6 })
+    .isInt({ min: 6, max: 6 })
     .withMessage('Day of week must be 0-6'),
   body('schedules.*.startTime')
     .matches(/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/)

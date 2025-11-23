@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  url      = "mysql://tonrisco_admin:StayFit2026!@192.250.237.223:3306/tonrisco_db"
 }
 
 enum TenantStatus {
