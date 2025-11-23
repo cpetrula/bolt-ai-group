@@ -145,6 +145,7 @@ const docs = [
   { file: 'DEMO_QUICK_START.md', name: 'Quick Start Guide' },
 ];
 
+let docsCorrect = true;
 docs.forEach((doc) => {
   const docPath = path.join(__dirname, doc.file);
   if (fs.existsSync(docPath)) {
@@ -152,9 +153,14 @@ docs.forEach((doc) => {
     console.log(`✅ ${doc.name} exists (${content.length} bytes)`);
   } else {
     console.log(`❌ ${doc.name} not found`);
-    pricingCorrect = false;
+    docsCorrect = false;
   }
 });
+
+if (!docsCorrect) {
+  console.log('\n⚠️  Documentation validation failed!');
+  process.exit(1);
+}
 
 // Check package.json has seed script
 console.log('\n📦 Checking package.json...');

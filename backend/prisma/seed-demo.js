@@ -165,6 +165,9 @@ async function seedDemo() {
 
   try {
     // Check if demo tenant already exists
+    // WARNING: This script will automatically delete and recreate the demo tenant
+    // This is safe for demo purposes but should not be used in production environments
+    // For production, consider adding a confirmation prompt or environment variable check
     const existingTenant = await prisma.tenant.findFirst({
       where: {
         OR: [
@@ -176,6 +179,7 @@ async function seedDemo() {
 
     if (existingTenant) {
       console.log('Demo tenant already exists. Deleting existing demo tenant...');
+      console.log('⚠️  This will delete all associated data (services, employees, appointments, etc.)');
       await prisma.tenant.delete({
         where: { id: existingTenant.id },
       });
