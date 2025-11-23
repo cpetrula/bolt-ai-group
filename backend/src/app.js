@@ -16,7 +16,9 @@ const appointmentRouter = require('./modules/appointments/appointment.routes');
 const billingRouter = require('./modules/billing/billing.routes');
 const telephonyRouter = require('./modules/telephony/telephony.routes');
 const aiRouter = require('./modules/ai-assistant/ai.routes');
+const path = require('path'); // Import path module for resolving paths
 const reportsRouter = require('./modules/reports/reports.routes');
+global.__basedir = __dirname
 
 // Create Express application
 const app = express();
@@ -47,6 +49,13 @@ app.use(notFoundHandler);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
+
+// Serve static files from the "frontend/dist" directory
+const staticPath = path.join(__dirname, '../../frontend/dist');
+console.log('Serving static files from:', staticPath);
+app.use(express.static(staticPath));
+
+
 
 // Start server
 const startServer = async () => {
