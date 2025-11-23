@@ -58,8 +58,9 @@ check_ngrok() {
 
 # Check if backend is running
 check_backend() {
-    if ! curl -s http://localhost:3000/api/health > /dev/null 2>&1; then
-        print_warning "Backend server doesn't appear to be running on port 3000"
+    local port=$1
+    if ! curl -s http://localhost:$port/api/health > /dev/null 2>&1; then
+        print_warning "Backend server doesn't appear to be running on port $port"
         echo
         echo "Please start the backend server first:"
         echo "  cd backend"
@@ -71,7 +72,7 @@ check_backend() {
             exit 1
         fi
     else
-        print_success "Backend server is running on port 3000"
+        print_success "Backend server is running on port $port"
     fi
 }
 
@@ -81,8 +82,14 @@ get_ngrok_url() {
     local attempt=1
     
     while [ $attempt -le $max_attempts ]; do
-        # Try to extract URL more robustly, handling various ngrok domain formats
-        local url=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null | grep -o 'https://[a-zA-Z0-9-]*\.ngrok[^",:}]*' | head -1)
+        # Extract URL using jq if available, otherwise use grep
+        if command -v jq &> /dev/null; then
+            local url=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null | jq -r '.tunnels[0].public_url // empty' 2>/dev/null)
+        else
+            # Fallback to grep for systems without jq
+            local url=$(curl -s http://localhost:4040/api/tunnels 2>/dev/null | grep -o '"public_url":"https://[^"]*' | cut -d'"' -f4 | head -1)
+        fi
+        
         if [ -n "$url" ]; then
             echo "$url"
             return 0
@@ -107,15 +114,18 @@ update_env() {
     # Backup .env file
     cp "$env_file" "$env_file.backup.$(date +%s)"
     
+    # Escape forward slashes in URL for sed
+    local escaped_url=$(echo "$ngrok_url" | sed 's/\//\\\//g')
+    
     # Update or add NGROK_URL
     # Use different sed syntax for macOS vs Linux compatibility
     if grep -q "^NGROK_URL=" "$env_file"; then
         if [[ "$OSTYPE" == "darwin"* ]]; then
             # macOS
-            sed -i '' "s|^NGROK_URL=.*|NGROK_URL=$ngrok_url|g" "$env_file"
+            sed -i '' "s/^NGROK_URL=.*/NGROK_URL=$escaped_url/g" "$env_file"
         else
             # Linux
-            sed -i "s|^NGROK_URL=.*|NGROK_URL=$ngrok_url|g" "$env_file"
+            sed -i "s/^NGROK_URL=.*/NGROK_URL=$escaped_url/g" "$env_file"
         fi
         print_success "Updated NGROK_URL in $env_file"
     else
@@ -164,6 +174,19 @@ display_webhooks() {
     echo
 }
 
+# Cleanup function
+cleanup() {
+    echo
+    print_info "Stopping ngrok..."
+    if [ -n "$NGROK_PID" ] && kill -0 $NGROK_PID 2>/dev/null; then
+        kill $NGROK_PID 2>/dev/null || true
+        sleep 1
+    fi
+    echo
+    print_success "Ngrok stopped"
+    exit 0
+}
+
 # Main script
 main() {
     clear
@@ -177,7 +200,7 @@ main() {
     
     # Checks
     check_ngrok
-    check_backend
+    check_backend "$PORT"
     
     echo
     print_info "Starting ngrok tunnel..."
@@ -211,7 +234,7 @@ main() {
     echo
     
     # Trap Ctrl+C to cleanup
-    trap "echo; print_info 'Stopping ngrok...'; kill $NGROK_PID 2>/dev/null || true; echo; print_success 'Ngrok stopped'; exit 0" INT
+    trap cleanup INT
     
     # Wait for ngrok process
     wait $NGROK_PID

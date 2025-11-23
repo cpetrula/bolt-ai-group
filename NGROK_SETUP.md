@@ -446,16 +446,38 @@ ngrok http 3000
 #!/bin/bash
 # update-ngrok-url.sh
 
-# Get ngrok URL
-NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o 'https://[a-zA-Z0-9-]*\.ngrok-free\.app')
+# Get ngrok URL (works with jq if available, otherwise uses grep)
+if command -v jq &> /dev/null; then
+    NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url // empty')
+else
+    NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"https://[^"]*' | cut -d'"' -f4 | head -1)
+fi
 
 echo "Current ngrok URL: $NGROK_URL"
 
-# Update .env file
-sed -i.bak "s|NGROK_URL=.*|NGROK_URL=$NGROK_URL|g" backend/.env
+# Update .env file (handles macOS and Linux)
+if [[ -n "$NGROK_URL" ]]; then
+    # Escape forward slashes for sed
+    ESCAPED_URL=$(echo "$NGROK_URL" | sed 's/\//\\\//g')
+    
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        sed -i '' "s/^NGROK_URL=.*/NGROK_URL=$ESCAPED_URL/" backend/.env
+    else
+        # Linux
+        sed -i "s/^NGROK_URL=.*/NGROK_URL=$ESCAPED_URL/" backend/.env
+    fi
+    
+    echo "Updated backend/.env"
+    echo "Don't forget to update Twilio, Stripe, and Vapi webhook URLs!"
+else
+    echo "Failed to get ngrok URL"
+fi
+```
 
-echo "Updated backend/.env"
-echo "Don't forget to update Twilio, Stripe, and Vapi webhook URLs!"
+**Or use the automated script included in the repo:**
+```bash
+./start-ngrok.sh
 ```
 
 ### Issue: Request timeout
