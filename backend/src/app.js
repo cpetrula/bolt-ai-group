@@ -1,0 +1,81 @@
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const { env } = require('./config/env');
+const { connectDB } = require('./config/db');
+const { logger } = require('./utils/logger');
+const { requestLogger } = require('./middleware/logger');
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
+const { multiTenantMiddleware } = require('./middleware/multiTenant');
+const healthRouter = require('./routes/health');
+const authRouter = require('./modules/auth/auth.routes');
+const tenantRouter = require('./modules/tenants/tenant.routes');
+const employeeRouter = require('./modules/employees/employee.routes');
+const serviceRouter = require('./modules/services/service.routes');
+const appointmentRouter = require('./modules/appointments/appointment.routes');
+const billingRouter = require('./modules/billing/billing.routes');
+const telephonyRouter = require('./modules/telephony/telephony.routes');
+const aiRouter = require('./modules/ai-assistant/ai.routes');
+const reportsRouter = require('./modules/reports/reports.routes');
+
+// Create Express application
+const app = express();
+
+// Security middleware
+app.use(helmet());
+
+// CORS configuration
+app.use(
+  cors({
+    origin: env.nodeEnv === 'production' ? [] : '*', // Configure for production
+    credentials: true,
+  })
+);
+
+// Routers
+app.use('/api/employees', employeeRouter);
+app.use('/api/services', serviceRouter);
+app.use('/api', appointmentRouter);
+app.use('/api', billingRouter);
+app.use('/api', telephonyRouter);
+app.use('/api/ai', aiRouter);
+app.use('/api', reportsRouter);
+
+// 404 handler
+app.use(notFoundHandler);
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
+
+// Start server
+const startServer = async () => {
+  try {
+    // Connect to database
+    await connectDB();
+
+    // Start Express server
+    app.listen(env.port, () => {
+      logger.info(`🚀 Server running on port ${env.port}`);
+      logger.info(`📝 Environment: ${env.nodeEnv}`);
+      logger.info(`🔗 Health check: http://localhost:${env.port}/api/health`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  logger.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled Rejection:', reason);
+  process.exit(1);
+});
+
+// Start the server
+startServer();
