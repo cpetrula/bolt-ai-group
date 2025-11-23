@@ -1,19 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80" fill="none">
-  <!-- Lightning Bolt icon -->
-  <g id="lightning-bolt-icon">
-    <path d="M45 15L25 40H35L30 65L50 35H40L45 15Z" fill="#2563EB" stroke="#1E40AF" stroke-width="1.5" stroke-linejoin="round"/>
-    <circle cx="37.5" cy="40" r="25" fill="none" stroke="#2563EB" stroke-width="2" opacity="0.3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 80" fill="none">
+  <defs>
+    <!-- Gradient for T -->
+    <linearGradient id="gradientT" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7C3AED;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E1A8A;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for R -->
+    <linearGradient id="gradientR" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D946EF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A855F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient for lightning bolt -->
+    <linearGradient id="gradientBolt" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00D4FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- TR Icon Group -->
+  <g id="tr-icon" transform="translate(0, 10)">
+    <!-- T Letter -->
+    <g id="letter-t">
+      <!-- Top horizontal bar of T -->
+      <path d="M 5 0 L 45 0 C 48 0 50 2 50 5 L 50 12 C 50 15 48 17 45 17 L 5 17 C 2 17 0 15 0 12 L 0 5 C 0 2 2 0 5 0 Z" 
+            fill="url(#gradientT)"/>
+      
+      <!-- Vertical stem of T with curve -->
+      <path d="M 17 17 L 17 22 C 17 26 19 30 22 32 L 22 55 C 22 58 24 60 27 60 L 28 60 C 31 60 33 58 33 55 L 33 32 C 36 30 38 26 38 22 L 38 17 Z" 
+            fill="url(#gradientT)"/>
+      
+      <!-- Lightning bolt accent -->
+      <path d="M 25 2 L 23 10 L 27 10 L 25 18 L 30 10 L 27 10 Z" 
+            fill="url(#gradientBolt)" opacity="0.9"/>
+    </g>
+    
+    <!-- R Letter -->
+    <g id="letter-r" transform="translate(50, 0)">
+      <!-- Vertical stem of R -->
+      <rect x="0" y="0" width="11" height="60" rx="3" fill="url(#gradientR)"/>
+      
+      <!-- Top bowl of R -->
+      <path d="M 11 0 L 30 0 C 40 0 48 8 48 18 L 48 22 C 48 32 40 40 30 40 L 11 40 Z" 
+            fill="url(#gradientR)"/>
+      
+      <!-- Leg of R -->
+      <path d="M 30 40 C 33 40 35 42 36 45 L 45 57 C 46 59 45 60 43 60 L 38 60 C 36 60 35 59 34 57 L 28 47 C 26 44 27 40 30 40 Z" 
+            fill="url(#gradientR)"/>
+    </g>
   </g>
   
-  <!-- Company name -->
-  <g id="company-name" fill="#1F2937">
-    <!-- Bolt -->
-    <text x="80" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700">Bolt</text>
-    
-    <!-- AI -->
-    <text x="80" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#2563EB">AI</text>
-    
-    <!-- Group -->
-    <text x="130" y="60" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700">Group</text>
-  </g>
+  <!-- TONRIS Text -->
+  <text x="110" y="52" 
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" 
+        font-size="36" 
+        font-weight="700" 
+        fill="#1E293B" 
+        letter-spacing="-0.5">TONRIS</text>
 </svg>

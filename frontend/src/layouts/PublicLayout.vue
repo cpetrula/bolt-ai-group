@@ -10,8 +10,8 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
-            <router-link to="/" class="flex items-center gap-3" aria-label="Bolt AI Group Home">
-              <img src="/logo.svg" alt="Bolt AI Group Logo" class="h-10" />
+            <router-link to="/" class="flex items-center gap-3" aria-label="TONRIS Home">
+              <img src="/logo.svg" alt="TONRIS Logo" class="h-10" />
             </router-link>
           </div>
           <div class="flex items-center space-x-1 sm:space-x-4">
@@ -58,7 +58,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 class="text-lg font-semibold mb-4">Bolt AI Group</h3>
+            <h3 class="text-lg font-semibold mb-4">TONRIS</h3>
             <p class="text-secondary-300">
               AI-powered virtual assistants for your business
             </p>
@@ -89,12 +89,12 @@
           <div>
             <h3 class="text-lg font-semibold mb-4">Contact</h3>
             <p class="text-secondary-300">
-              Email: <a href="mailto:support@boltaigroup.com" class="hover:text-white transition-colors focus:outline-none focus:underline">support@boltaigroup.com</a>
+              Email: <a href="mailto:support@tonris.com" class="hover:text-white transition-colors focus:outline-none focus:underline">support@tonris.com</a>
             </p>
           </div>
         </div>
         <div class="border-t border-secondary-700 mt-8 pt-8 text-center text-secondary-400">
-          <p>&copy; 2024 Bolt AI Group. All rights reserved.</p>
+          <p>&copy; 2024 TONRIS. All rights reserved.</p>
         </div>
       </div>
     </footer>
