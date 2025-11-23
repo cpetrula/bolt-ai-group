@@ -16,7 +16,7 @@ const { AppError } = require('../../middleware/errorHandler');
  */
 const handleCheckAvailability = async (
   context,
-  entities, any>
+  entities
 ) => {
   try {
     const { tenantId } = context;
@@ -70,7 +70,7 @@ const handleCheckAvailability = async (
  */
 const handleBookAppointment = async (
   context,
-  entities, any>
+  entities
 ) => {
   try {
     const { tenantId, customerName, customerPhone, customerEmail } = context;
@@ -130,7 +130,7 @@ const handleBookAppointment = async (
  */
 const handleCancelAppointment = async (
   context,
-  entities, any>
+  entities
 ) => {
   try {
     const { tenantId, customerPhone } = context;
@@ -192,7 +192,7 @@ const handleCancelAppointment = async (
  */
 const handleAskServices = async (
   context,
-  _entities, any>
+  _entities
 ) => {
   try {
     const { tenantId } = context;
@@ -232,7 +232,7 @@ const handleAskServices = async (
  */
 const handleAskHours = async (
   context,
-  _entities, any>
+  _entities
 ) => {
   try {
     const { tenantId } = context;
@@ -281,7 +281,7 @@ const handleAskHours = async (
 const handleIntent = async (
   intent,
   context,
-  entities, any>
+  entities
 ) => {
   logger.info('Handling intent:', { intent, context, entities });
 

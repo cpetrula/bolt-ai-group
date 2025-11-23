@@ -76,7 +76,7 @@ const sendSMS = async (
 const validateTwilioSignature = (
   signature,
   url,
-  params, any>
+  params
 ) => {
   try {
     return twilio.validateRequest(

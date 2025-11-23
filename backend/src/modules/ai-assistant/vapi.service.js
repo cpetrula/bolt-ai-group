@@ -25,7 +25,7 @@ class VapiService {
    */
   async initiateCall(
     phoneNumber,
-    options, any>
+    options
   ) {
     if (!this.apiKey || !this.assistantId) {
       throw new AppError('Vapi not configured', 500);
@@ -153,13 +153,7 @@ class VapiService {
   /**
    * Create or update assistant configuration
    */
-  async configureAssistant(config: {
-    name;
-    firstMessage;
-    model;
-    voice;
-    systemPrompt;
-  }) {
+  async configureAssistant(config) {
     if (!this.apiKey) {
       throw new AppError('Vapi API key not configured', 500);
     }

@@ -8,7 +8,7 @@ const { Decimal } = require('@prisma/client/runtime/library');
  */
 const getCallLogsReport = async (
   tenantId,
-  filters?: CallLogFilters
+  filters
 ) => {
   const whereClause = { tenantId };
 
@@ -51,7 +51,7 @@ const getCallLogsReport = async (
  */
 const getAppointmentsReport = async (
   tenantId,
-  filters; endDate?: string }
+  filters
 ) => {
   const now = new Date();
   const whereClause = { tenantId };
@@ -151,7 +151,7 @@ const getAppointmentsReport = async (
  */
 const getRevenueReport = async (
   tenantId,
-  filters; endDate?: string }
+  filters
 ) => {
   const whereClause = {
     tenantId,
@@ -190,10 +190,7 @@ const getRevenueReport = async (
   );
 
   // Group revenue by service
-  const revenueByServiceMap = new Map<
-    string,
-    { serviceName: string; revenue: Decimal; count: number }
-  >();
+  const revenueByServiceMap = new Map();
 
   completedAppointments.forEach((appointment) => {
     const serviceId = appointment.service.id;

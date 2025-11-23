@@ -16,7 +16,7 @@ const handleWebhook = async (req, res) => {
     return;
   }
 
-  let event: Stripe.Event;
+  let event;
 
   try {
     // Construct event from raw body
@@ -78,7 +78,7 @@ const handleWebhook = async (req, res) => {
  * Handle checkout session completed
  */
 const handleCheckoutSessionCompleted = async (
-  session: Stripe.Checkout.Session
+  session
 ) => {
   const { subscription, metadata } = session;
 
@@ -106,7 +106,7 @@ const handleCheckoutSessionCompleted = async (
  * Handle subscription created or updated
  */
 const handleSubscriptionUpdate = async (
-  subscription: Stripe.Subscription
+  subscription
 ) => {
   const sub = subscription;
   const {
@@ -132,7 +132,7 @@ const handleSubscriptionUpdate = async (
  * Handle subscription deleted
  */
 const handleSubscriptionDeleted = async (
-  subscription: Stripe.Subscription
+  subscription
 ) => {
   const { id } = subscription;
 
@@ -145,7 +145,7 @@ const handleSubscriptionDeleted = async (
  * Handle invoice payment succeeded
  */
 const handleInvoicePaymentSucceeded = async (
-  invoice: Stripe.Invoice
+  invoice
 ) => {
   const inv = invoice;
   const subscriptionId = typeof inv.subscription === 'string' 
@@ -164,7 +164,7 @@ const handleInvoicePaymentSucceeded = async (
  * Handle invoice payment failed
  */
 const handleInvoicePaymentFailed = async (
-  invoice: Stripe.Invoice
+  invoice
 ) => {
   const inv = invoice;
   const subscriptionId = typeof inv.subscription === 'string' 
