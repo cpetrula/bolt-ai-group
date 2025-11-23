@@ -63,7 +63,11 @@ app.use(express.static(staticPath));
 app.use((req, res, next) => {
   // Only serve index.html for non-API routes
   if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(staticPath, 'index.html'));
+    res.sendFile(path.join(staticPath, 'index.html'), (err) => {
+      if (err) {
+        next(err);
+      }
+    });
   } else {
     next();
   }
