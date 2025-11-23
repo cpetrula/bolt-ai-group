@@ -59,8 +59,8 @@ const timeRangesOverlap = (
 const calculateServiceTotals = async (
   tenantId,
   serviceId,
-  addonIds?: string[]
-) { totalDuration: number; totalPrice: Decimal }> => {
+  addonIds
+) => {
   // Get base service
   const service = await prisma.service.findFirst({
     where: {
@@ -85,7 +85,7 @@ const calculateServiceTotals = async (
     const addons = await prisma.serviceAddon.findMany({
       where: {
         id: {
-          in,
+          in: addonIds,
         },
         tenantId,
         serviceId,

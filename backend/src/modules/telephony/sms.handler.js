@@ -86,7 +86,7 @@ const sendCustomerNotification = async (
   tenantId,
   phoneNumber,
   message,
-  appointmentId?: string
+  appointmentId
 ) => {
   try {
     // Create notification record
@@ -142,7 +142,7 @@ const sendEmployeeNotification = async (
   tenantId,
   employeeId,
   message,
-  appointmentId?: string
+  appointmentId
 ) => {
   try {
     // Get employee details

@@ -149,13 +149,7 @@ const updateService = async (
   await getServiceById(tenantId, serviceId);
 
   // Build update data object with only defined fields
-  const updateData: Partial<{
-    name: string;
-    description: string | null;
-    basePrice: number;
-    durationMinutes: number;
-    isActive: boolean;
-  }> = {};
+  const updateData = {};
 
   if (data.name !== undefined) updateData.name = data.name;
   if (data.description !== undefined) updateData.description = data.description || null;

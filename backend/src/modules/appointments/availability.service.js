@@ -155,7 +155,7 @@ const checkAvailability = async (
   serviceId,
   date,
   startTime,
-  addonIds?: string[]
+  addonIds
 ) => {
   // Get day of week
   const dayOfWeek = date.getDay();
@@ -203,7 +203,7 @@ const calculateEndTime = async (
   tenantId,
   serviceId,
   startTime,
-  addonIds?: string[]
+  addonIds
 ) => {
   const { totalDuration } = await calculateServiceTotals(tenantId, serviceId, addonIds);
   return addMinutesToTime(startTime, totalDuration);

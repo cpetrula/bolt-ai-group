@@ -161,7 +161,7 @@ const handleCallStatus = async (
 const updateCallLog = async (
   callSid,
   callReason,
-  notes?: string
+  notes
 ) => {
   try {
     const callLog = await prisma.callLog.findFirst({

@@ -24,7 +24,7 @@ const getPriceId = (plan) => {
  */
 const createCustomer = async (
   email,
-  tenantId): Promise<Stripe.Customer> => {
+  tenantId) => {
   try {
     const customer = await stripe.customers.create({
       email,
@@ -48,7 +48,7 @@ const createCheckoutSession = async (
   priceId,
   successUrl,
   cancelUrl,
-  tenantId): Promise<Stripe.Checkout.Session> => {
+  tenantId) => {
   try {
     const session = await stripe.checkout.sessions.create({
       customer,
@@ -85,7 +85,7 @@ const createCheckoutSession = async (
  */
 const createPortalSession = async (
   customerId,
-  returnUrl): Promise<Stripe.BillingPortal.Session> => {
+  returnUrl) => {
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer,
@@ -103,7 +103,7 @@ const createPortalSession = async (
  * Retrieve a subscription from Stripe
  */
 const getSubscription = async (
-  subscriptionId): Promise<Stripe.Subscription> => {
+  subscriptionId) => {
   try {
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     return subscription;
@@ -117,7 +117,7 @@ const getSubscription = async (
  * Cancel a subscription
  */
 const cancelSubscription = async (
-  subscriptionId): Promise<Stripe.Subscription> => {
+  subscriptionId) => {
   try {
     const subscription = await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end,
@@ -135,7 +135,7 @@ const cancelSubscription = async (
  */
 const constructWebhookEvent = (
   payload,
-  signature): Stripe.Event => {
+  signature) => {
   try {
     const event = stripe.webhooks.constructEvent(
       payload,

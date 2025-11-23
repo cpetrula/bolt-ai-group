@@ -17,12 +17,7 @@ const { timeToMinutes,
  */
 const getAppointments = async (
   tenantId,
-  filters?: {
-    employeeId;
-    status;
-    startDate;
-    endDate;
-  }
+  filters
 ) => {
   const whereClause = { tenantId };
 
@@ -238,7 +233,7 @@ const createAppointment = async (
       const addons = await tx.serviceAddon.findMany({
         where: {
           id: {
-            in,
+            in: addonIds,
           },
           tenantId,
           serviceId,
@@ -390,7 +385,7 @@ const updateAppointment = async (
           const addons = await tx.serviceAddon.findMany({
             where: {
               id: {
-                in,
+                in: newAddonIds,
               },
               tenantId,
               serviceId,
@@ -515,7 +510,7 @@ const checkAvailabilityExcludingAppointment = async (
   date,
   startTime,
   excludeAppointmentId,
-  addonIds?: string[]
+  addonIds
 ) => {
   // Get day of week
   const dayOfWeek = date.getDay();
