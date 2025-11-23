@@ -717,17 +717,27 @@ Create a seeded demo tenant for the public “try it now” phone number on the 
 
 Tenant: Demo Salon
 
-Twilio number: +1-XXX-XXX-XXXX (real number configured in Twilio)
+Twilio number: +1-555-555-1234 (displayed on home page)
 
-Seed:
+Status: ACTIVE
 
-Common services and prices
+**What's Included:**
+- 8 common salon services with pricing ($40-$220)
+- 3 demo stylists with varied schedules
+- AI configuration with custom greeting and business hours
+- Service add-ons (Deep Conditioning, Olaplex, Beard Trim)
 
-A few stylists with schedules
+**Setup Instructions:**
+1. Ensure database is running and configured in `.env`
+2. Run: `cd backend && npm run prisma:generate`
+3. Run: `node prisma/seed-demo.js`
+4. Verify creation in console output
 
-AI config tuned to a generic salon.
+The seed script is idempotent and will recreate the demo tenant if run multiple times.
 
-Calls to the demo number go through the same AI pipeline, but always mapped to the demo tenant.
+See `backend/prisma/seed-demo.js` and `backend/prisma/DEMO_SEED_README.md` for details.
+
+Calls to the demo number go through the same AI pipeline, but are always mapped to the demo tenant.
 
 11. Common Salon Service Seed Data (Example)
 
