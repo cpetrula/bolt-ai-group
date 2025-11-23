@@ -1197,7 +1197,7 @@ AI-callable endpoint to check appointment availability.
 
 **Endpoint**: `POST /api/ai/availability`
 
-**Authentication**: Required (JWT from AI system)
+**Authentication**: Required (same JWT authentication as other endpoints - the AI system must use a valid user JWT token)
 
 **Request Body**:
 ```json

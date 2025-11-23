@@ -176,6 +176,8 @@ This will:
 To populate the database with demo data:
 
 ```bash
+npm run seed
+# Or alternatively:
 node prisma/seed-demo.js
 ```
 

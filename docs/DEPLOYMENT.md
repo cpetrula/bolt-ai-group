@@ -204,7 +204,14 @@ openssl rand -base64 64
    npx prisma db push
    ```
 
-**Note**: PlanetScale doesn't support foreign key constraints. Prisma handles this at application level.
+**⚠️ IMPORTANT**: PlanetScale does NOT support foreign key constraints at the database level. 
+While Prisma enforces referential integrity at the application level, this means:
+- You lose database-level cascade deletes
+- Data integrity depends entirely on application logic
+- Manual cleanup may be required for orphaned records
+- Consider this carefully for mission-critical data
+
+For applications requiring strict referential integrity, use MySQL on AWS RDS or DigitalOcean instead.
 
 ### Option 2: AWS RDS
 
