@@ -94,10 +94,10 @@ const sendCustomerNotification = async (
       data: {
         tenantId,
         type: NotificationType.SMS,
-        recipient,
+        recipient: phoneNumber,
         message,
         status: NotificationStatus.QUEUED,
-        relatedAppointmentId,
+        relatedAppointmentId: appointmentId,
       },
     });
 
@@ -162,7 +162,7 @@ const sendEmployeeNotification = async (
         recipient: employee.phone,
         message,
         status: NotificationStatus.QUEUED,
-        relatedAppointmentId,
+        relatedAppointmentId: appointmentId,
       },
     });
 
@@ -211,9 +211,9 @@ const sendAppointmentConfirmation = async (
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        tenant,
-        employee,
-        service,
+        tenant: true,
+        employee: true,
+        service: true,
       },
     });
 
@@ -252,8 +252,8 @@ const sendAppointmentReminder = async (
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        tenant,
-        service,
+        tenant: true,
+        service: true,
       },
     });
 

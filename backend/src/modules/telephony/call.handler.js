@@ -60,9 +60,9 @@ const handleIncomingCall = async (
     const callLog = await prisma.callLog.create({
       data: {
         tenantId: tenant.id,
-        callSid,
-        fromNumber,
-        toNumber,
+        callSid: CallSid,
+        fromNumber: From,
+        toNumber: To,
         startTime: new Date(),
         callReason: CallReason.OTHER,
       },
