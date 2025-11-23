@@ -34,7 +34,16 @@ app.use(
   })
 );
 
-// Routers
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Request logging middleware
+app.use(requestLogger);
+
+// API Routers
+app.use('/api/auth', authRouter);
+app.use('/api/tenants', tenantRouter);
 app.use('/api', healthRouter);
 app.use('/api/employees', employeeRouter);
 app.use('/api/services', serviceRouter);
@@ -44,16 +53,31 @@ app.use('/api', telephonyRouter);
 app.use('/api/ai', aiRouter);
 app.use('/api', reportsRouter);
 
-// 404 handler
-app.use(notFoundHandler);
-
-// Error handling middleware (must be last)
-app.use(errorHandler);
-
 // Serve static files from the "frontend/dist" directory
 const staticPath = path.join(__dirname, '../../frontend/dist');
 console.log('Serving static files from:', staticPath);
 app.use(express.static(staticPath));
+
+// SPA fallback - serve index.html for all non-API routes
+// This must come after static files but before 404 handler
+app.use((req, res, next) => {
+  // Only serve index.html for non-API routes
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(staticPath, 'index.html'), (err) => {
+      if (err) {
+        next(err);
+      }
+    });
+  } else {
+    next();
+  }
+});
+
+// 404 handler for API routes
+app.use(notFoundHandler);
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 
 
