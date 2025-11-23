@@ -9,10 +9,14 @@ const router = Router();
 
 /**
  * Webhook routes (no authentication, handled by Twilio signature validation)
+ * Twilio supports both GET and POST for webhooks
  */
 router.post('/webhooks/twilio/voice', callHandler.handleIncomingCall);
+router.get('/webhooks/twilio/voice', callHandler.handleIncomingCall);
 router.post('/webhooks/twilio/voice/status', callHandler.handleCallStatus);
+router.get('/webhooks/twilio/voice/status', callHandler.handleCallStatus);
 router.post('/webhooks/twilio/sms', smsHandler.handleIncomingSMS);
+router.get('/webhooks/twilio/sms', smsHandler.handleIncomingSMS);
 
 /**
  * Protected routes (authentication required)
