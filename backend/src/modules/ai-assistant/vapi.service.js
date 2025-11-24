@@ -22,6 +22,12 @@ class VapiService {
 
   /**
    * Initiate an outbound call using Vapi
+   * 
+   * @param {string} phoneNumber - Phone number to call
+   * @param {Object} options - Configuration options for the call
+   * @param {string} options.businessName - Business name to pass as variable to Vapi assistant
+   * @param {Object} options.metadata - Additional metadata to pass to Vapi
+   * @returns {Promise<string>} The call ID
    */
   async initiateCall(
     phoneNumber,
@@ -32,19 +38,35 @@ class VapiService {
     }
 
     try {
+      // Build the request payload with assistantOverrides if businessName is provided
+      const payload = {
+        assistantId: this.assistantId,
+        customer: {
+          number: phoneNumber,
+        },
+        ...options,
+      };
+
+      // Add assistantOverrides with variableValues if businessName is provided
+      if (options?.businessName) {
+        payload.assistantOverrides = {
+          ...payload.assistantOverrides,
+          variableValues: {
+            ...payload.assistantOverrides?.variableValues,
+            'business name': options.businessName,
+          },
+        };
+        // Remove businessName from top-level options to avoid duplication
+        delete payload.businessName;
+      }
+
       const response = await fetch(`${this.baseUrl}/call`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`,
         },
-        body: JSON.stringify({
-          assistantId: this.assistantId,
-          customer: {
-            number: phoneNumber,
-          },
-          ...options,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -74,6 +96,7 @@ class VapiService {
    * @param {Object} options.customer - Customer information
    * @param {string} options.customer.number - Customer phone number
    * @param {Object} options.metadata - Additional metadata to pass to Vapi
+   * @param {string} options.businessName - Business name to pass as variable to Vapi assistant
    * @returns {Promise<string>} The web call ID that can be used for connection
    */
   async createWebCall(options) {
@@ -82,16 +105,32 @@ class VapiService {
     }
 
     try {
+      // Build the request payload with assistantOverrides if businessName is provided
+      const payload = {
+        assistantId: this.assistantId,
+        ...options,
+      };
+
+      // Add assistantOverrides with variableValues if businessName is provided
+      if (options?.businessName) {
+        payload.assistantOverrides = {
+          ...payload.assistantOverrides,
+          variableValues: {
+            ...payload.assistantOverrides?.variableValues,
+            'business name': options.businessName,
+          },
+        };
+        // Remove businessName from top-level options to avoid duplication
+        delete payload.businessName;
+      }
+
       const response = await fetch(`${this.baseUrl}/call/web`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.apiKey}`,
         },
-        body: JSON.stringify({
-          assistantId: this.assistantId,
-          ...options,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
