@@ -205,7 +205,10 @@ class VapiService {
         if (!this.phoneNumber.startsWith('+') || !/^\+[0-9]+$/.test(this.phoneNumber)) {
           logger.warn(`Vapi phone number should be in E.164 format (e.g., +1234567890): ${this.phoneNumber}`);
         }
-        basePayload.phoneNumber = this.phoneNumber;
+        // Vapi API expects phoneNumber to be an object with a number property
+        basePayload.phoneNumber = {
+          number: this.phoneNumber,
+        };
       }
 
       // Add metadata if provided
