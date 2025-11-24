@@ -30,6 +30,7 @@ const env = {
   openaiApiKey: process.env.OPENAI_API_KEY,
   vapiApiKey: process.env.VAPI_API_KEY,
   vapiAssistantId: process.env.VAPI_ASSISTANT_ID,
+  vapiPhoneNumber: process.env.VAPI_PHONE_NUMBER,
   elevenlabsApiKey: process.env.ELEVENLABS_API_KEY,
 };
 

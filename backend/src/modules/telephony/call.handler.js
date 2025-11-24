@@ -66,9 +66,11 @@ const handleIncomingCall = async (
     
     // Check if Vapi is configured for production use
     if (vapiService.apiKey && vapiService.assistantId) {
-      // Production mode: Connect call to Vapi for AI-powered conversation
-      logger.info(`Connecting call to Vapi assistant ${vapiService.assistantId}`);
-      twiml = generateVapiConnectTwiML(tenant, callLog);
+      // Production mode: Forward call to Vapi's phone number
+      // Vapi provides a dedicated phone number for each assistant
+      // This is the secure, recommended approach
+      logger.info(`Forwarding call to Vapi assistant ${vapiService.assistantId}`);
+      twiml = generateVapiConnectTwiML(tenant);
     } else {
       // Fallback mode: Basic greeting when Vapi is not configured
       logger.warn('Vapi not configured, using fallback greeting');
@@ -174,52 +176,43 @@ const updateCallLog = async (
 
 /**
  * Generate TwiML to connect call to Vapi AI assistant
- * This uses Twilio's dial and SIP functionality to bridge the call to Vapi
+ * Uses Vapi's phone number system for secure, production-ready integration
  */
-const generateVapiConnectTwiML = (tenant, callLog) => {
+const generateVapiConnectTwiML = (tenant) => {
   const twilio = require('twilio');
   const twiml = new twilio.twiml.VoiceResponse();
   
-  // Add a brief greeting before connecting to Vapi
+  // Brief greeting
   twiml.say(
     { voice: 'alice' },
-    `Thank you for calling ${tenant.name}. Please hold while we connect you to our AI assistant.`
+    `Thank you for calling ${tenant.name}. Connecting you now.`
   );
   
-  // Connect to Vapi using their Web endpoint
-  // Vapi requires specific parameters to identify the assistant and pass call metadata
-  const connect = twiml.connect();
+  // Forward the call to Vapi's phone number for this assistant
+  // In Vapi dashboard, you get a dedicated phone number per assistant
+  // Set VAPI_PHONE_NUMBER in .env to this number
+  const vapiPhoneNumber = env.vapiPhoneNumber || process.env.VAPI_PHONE_NUMBER;
   
-  // Use Vapi's web stream for the connection
-  // This establishes a WebSocket connection between Twilio and Vapi
-  const stream = connect.stream({
-    url: `wss://api.vapi.ai`,
-  });
-  
-  // Pass metadata to Vapi about this call
-  // This helps Vapi identify which assistant to use and provides context
-  stream.parameter({
-    name: 'assistantId',
-    value: vapiService.assistantId,
-  });
-  
-  stream.parameter({
-    name: 'apiKey', 
-    value: vapiService.apiKey,
-  });
-  
-  // Pass tenant information for context
-  stream.parameter({
-    name: 'metadata',
-    value: JSON.stringify({
-      tenantId: tenant.id,
-      tenantName: tenant.name,
-      callLogId: callLog.id,
-      callSid: callLog.callSid,
-      // Provide the base URL for Vapi to call our APIs
-      serverUrl: env.ngrokUrl || `http://localhost:${env.port}`,
-    }),
-  });
+  if (vapiPhoneNumber) {
+    // Dial Vapi's phone number
+    // Vapi automatically handles the call with the configured assistant
+    const dial = twiml.dial({
+      callerId: tenant.twilioPhoneNumber, // Use tenant's number as caller ID
+    });
+    dial.number(vapiPhoneNumber);
+    
+    // Fallback message if Vapi doesn't answer
+    twiml.say(
+      { voice: 'alice' },
+      'Our AI assistant is currently unavailable. Please try again later.'
+    );
+  } else {
+    // No Vapi phone number configured - provide instructions
+    twiml.say(
+      { voice: 'alice' },
+      'To enable AI assistant features, configure your Vapi phone number in the environment settings. For now, please call back later or visit our website to book online.'
+    );
+  }
   
   return twiml.toString();
 };
