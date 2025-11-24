@@ -12,19 +12,7 @@ const handleIncomingSMS = async (
   res) => {
   try {
     // Validate Twilio signature for security
-    const signature = req.headers['x-twilio-signature'];
-    if (!signature) {
-      logger.error('Missing Twilio signature');
-      res.status(403).send('Forbidden');
-      return;
-    }
-
-    const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-    const isValid = twilioService.validateTwilioSignature(
-      signature,
-      url,
-      req.body
-    );
+    const isValid = twilioService.validateTwilioRequest(req);
 
     if (!isValid) {
       logger.error('Invalid Twilio signature');
@@ -37,7 +25,7 @@ const handleIncomingSMS = async (
       From,
       To,
       Body,
-    } = req.body;
+    } = req.method === 'POST' ? req.body : req.query;
 
     logger.info(`Incoming SMS: ${MessageSid} from ${From} to ${To}`);
     logger.info(`Message body: ${Body}`);
