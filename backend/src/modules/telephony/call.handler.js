@@ -62,16 +62,30 @@ const handleIncomingCall = async (
     logger.info(`Call log created: ${callLog.id} for tenant ${tenant.name}`);
 
     // Generate TwiML response
-    // In production, forward to Vapi AI assistant for intelligent call handling
+    // Forward to Vapi AI assistant for intelligent call handling using provider bypass
     let twiml;
     
     // Check if Vapi is configured for production use
     if (vapiService.apiKey && vapiService.assistantId) {
-      // Production mode: Forward call to Vapi's phone number
-      // Vapi provides a dedicated phone number for each assistant
-      // This is the secure, recommended approach
-      logger.info(`Forwarding call to Vapi assistant ${vapiService.assistantId}`);
-      twiml = generateVapiConnectTwiML(tenant);
+      // Production mode: Use Vapi's phone call provider bypass
+      // This creates a call in Vapi and returns TwiML with the correct WebSocket URL
+      logger.info(`Creating Vapi inbound call for tenant ${tenant.name}`);
+      try {
+        twiml = await vapiService.createInboundCall({
+          customerNumber: From,
+          businessName: tenant.name,
+          tenantId: tenant.id,
+          metadata: {
+            callLogId: callLog.id,
+            callSid: CallSid,
+          },
+        });
+      } catch (vapiError) {
+        logger.error('Failed to create Vapi inbound call:', vapiError);
+        // Fallback to basic greeting if Vapi call creation fails
+        const greeting = `Hello and thank you for calling ${tenant.name}. We are experiencing technical difficulties with our AI assistant. Please try again later.`;
+        twiml = twilioService.generateVoiceResponse(greeting);
+      }
     } else {
       // Fallback mode: Basic greeting when Vapi is not configured
       logger.warn('Vapi not configured, using fallback greeting');
@@ -173,74 +187,6 @@ const updateCallLog = async (
     logger.error('Error updating call log:', error);
     throw error;
   }
-};
-
-/**
- * Validate Vapi configuration
- * @private
- */
-const validateVapiConfiguration = () => {
-  const vapiApiKey = env.vapiApiKey || vapiService.apiKey;
-  const assistantId = env.vapiAssistantId || vapiService.assistantId;
-  
-  if (!vapiApiKey) {
-    logger.error('Vapi API key not configured - cannot connect to Vapi');
-    throw new Error('Vapi API key is required for WebSocket connection');
-  }
-  
-  if (!assistantId) {
-    logger.error('Vapi assistant ID not configured - cannot connect to Vapi');
-    throw new Error('Vapi assistant ID is required for WebSocket connection');
-  }
-  
-  return { vapiApiKey, assistantId };
-};
-
-/**
- * Generate TwiML to connect call to Vapi AI assistant
- * Uses Twilio's Connect/Stream to forward audio to Vapi's websocket
- * This allows passing custom metadata including business name
- */
-const generateVapiConnectTwiML = (tenant) => {
-  const twiml = new twilio.twiml.VoiceResponse();
-  
-  // Brief greeting (commented out for direct connection)
-  // twiml.say(
-  //   { voice: 'alice' },
-  //   `Thank you for calling ${tenant.name}. Connecting you now.`
-  // );
-  twiml.say(
-    { voice: 'alice' },
-    ``
-  );
-  
-  // Validate and get Vapi configuration
-  const { vapiApiKey, assistantId } = validateVapiConfiguration();
-  
-  // Connect to Vapi using Twilio Stream
-  // This streams the audio to Vapi's websocket and allows passing custom parameters
-  // API key and assistantId must be passed as query parameters in the URL for authentication
-  // Note: API key in URL is required by Vapi's Twilio Stream integration - ensure WebSocket URLs are not logged
-  const connect = twiml.connect();
-  const stream = connect.stream({
-    url: `wss://api.vapi.ai/v2/stream?assistantId=${assistantId}&apikey=${vapiApiKey}`,
-  });
-  
-  // Pass custom parameters to Vapi including business name
-  // These will be available in Vapi's assistant as variables
-  stream.parameter({
-    name: 'businessName',
-    value: tenant.name,
-  });
-  
-  stream.parameter({
-    name: 'tenantId',
-    value: tenant.id,
-  });
-  
-  logger.info(`Connecting call to Vapi assistant for tenant: ${tenant.name}`);
-  
-  return twiml.toString();
 };
 
 module.exports = { handleIncomingCall, handleCallStatus, updateCallLog };
