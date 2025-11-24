@@ -1,6 +1,7 @@
 const { Request, Response } = require('express');
 const { prisma } = require('../../config/db');
 const { logger } = require('../../utils/logger');
+const twilio = require('twilio');
 const twilioService = require('./twilio.service');
 const { vapiService } = require('../ai-assistant/vapi.service');
 const { env } = require('../../config/env');
@@ -179,7 +180,6 @@ const updateCallLog = async (
  * Uses Vapi's phone number system for secure, production-ready integration
  */
 const generateVapiConnectTwiML = (tenant) => {
-  const twilio = require('twilio');
   const twiml = new twilio.twiml.VoiceResponse();
   
   // Brief greeting
@@ -191,7 +191,7 @@ const generateVapiConnectTwiML = (tenant) => {
   // Forward the call to Vapi's phone number for this assistant
   // In Vapi dashboard, you get a dedicated phone number per assistant
   // Set VAPI_PHONE_NUMBER in .env to this number
-  const vapiPhoneNumber = env.vapiPhoneNumber || process.env.VAPI_PHONE_NUMBER;
+  const vapiPhoneNumber = env.vapiPhoneNumber;
   
   if (vapiPhoneNumber) {
     // Dial Vapi's phone number

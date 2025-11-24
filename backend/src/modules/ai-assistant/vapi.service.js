@@ -68,6 +68,13 @@ class VapiService {
   /**
    * Create a web call session for incoming calls
    * This is used when Twilio forwards an incoming call to Vapi
+   * 
+   * @param {Object} options - Configuration for the web call
+   * @param {string} options.assistantId - ID of the Vapi assistant (optional, uses default if not provided)
+   * @param {Object} options.customer - Customer information
+   * @param {string} options.customer.number - Customer phone number
+   * @param {Object} options.metadata - Additional metadata to pass to Vapi
+   * @returns {Promise<string>} The web call ID that can be used for connection
    */
   async createWebCall(options) {
     if (!this.apiKey || !this.assistantId) {
@@ -94,10 +101,18 @@ class VapiService {
       }
 
       const data = await response.json();
-      logger.info(`Web call created, ID: ${data.id || data.callId}`);
       
-      // Return the call ID that can be used to connect via SIP or other means
-      return data.id || data.callId || data.webCallUrl;
+      // Normalize the response to always return a call ID
+      const callId = data.id || data.callId || data.webCallId;
+      
+      if (!callId) {
+        logger.error('Vapi web call response missing ID:', data);
+        throw new AppError('Invalid Vapi web call response', 500);
+      }
+      
+      logger.info(`Web call created, ID: ${callId}`);
+      
+      return callId;
     } catch (error) {
       logger.error('Error creating web call:', error);
       throw error instanceof AppError
