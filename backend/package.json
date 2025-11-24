@@ -18,7 +18,7 @@
     "ai-assistant",
     "multi-tenant"
   ],
-  "author": "Bolt AI Group",
+  "author": "TONRIS",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^6.19.0",

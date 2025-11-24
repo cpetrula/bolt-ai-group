@@ -29,37 +29,37 @@ const routes = [
         path: '',
         name: 'home',
         component: HomePage,
-        meta: { title: 'Home - Bolt AI Group' }
+        meta: { title: 'Home - TONRIS' }
       },
       {
         path: 'signup',
         name: 'signup',
         component: SignUpPage,
-        meta: { title: 'Sign Up - Bolt AI Group' }
+        meta: { title: 'Sign Up - TONRIS' }
       },
       {
         path: 'login',
         name: 'login',
         component: LoginPage,
-        meta: { title: 'Login - Bolt AI Group' }
+        meta: { title: 'Login - TONRIS' }
       },
       {
         path: 'forgot-password',
         name: 'forgot-password',
         component: ForgotPasswordPage,
-        meta: { title: 'Forgot Password - Bolt AI Group' }
+        meta: { title: 'Forgot Password - TONRIS' }
       },
       {
         path: 'how-it-works',
         name: 'how-it-works',
         component: HowItWorksPage,
-        meta: { title: 'How It Works - Bolt AI Group' }
+        meta: { title: 'How It Works - TONRIS' }
       },
       {
         path: 'faq',
         name: 'faq',
         component: FAQPage,
-        meta: { title: 'FAQ - Bolt AI Group' }
+        meta: { title: 'FAQ - TONRIS' }
       },
     ]
   },
@@ -72,43 +72,43 @@ const routes = [
         path: '',
         name: 'dashboard',
         component: DashboardPage,
-        meta: { title: 'Dashboard - Bolt AI Group' }
+        meta: { title: 'Dashboard - TONRIS' }
       },
       {
         path: 'employees',
         name: 'employees',
         component: EmployeesPage,
-        meta: { title: 'Employees - Bolt AI Group' }
+        meta: { title: 'Employees - TONRIS' }
       },
       {
         path: 'services',
         name: 'services',
         component: ServicesPage,
-        meta: { title: 'Services - Bolt AI Group' }
+        meta: { title: 'Services - TONRIS' }
       },
       {
         path: 'appointments',
         name: 'appointments',
         component: AppointmentsPage,
-        meta: { title: 'Appointments - Bolt AI Group' }
+        meta: { title: 'Appointments - TONRIS' }
       },
       {
         path: 'billing',
         name: 'billing',
         component: BillingPage,
-        meta: { title: 'Billing - Bolt AI Group' }
+        meta: { title: 'Billing - TONRIS' }
       },
       {
         path: 'reports',
         name: 'reports',
         component: ReportsPage,
-        meta: { title: 'Reports - Bolt AI Group' }
+        meta: { title: 'Reports - TONRIS' }
       },
       {
         path: 'settings',
         name: 'settings',
         component: SettingsPage,
-        meta: { title: 'Settings - Bolt AI Group' }
+        meta: { title: 'Settings - TONRIS' }
       },
     ]
   },

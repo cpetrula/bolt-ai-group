@@ -2,7 +2,7 @@
   <div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
     <h1 class="text-4xl font-bold text-secondary-900 mb-4 text-center">Frequently Asked Questions</h1>
     <p class="text-xl text-secondary-600 mb-12 text-center">
-      Everything you need to know about Bolt AI Group
+      Everything you need to know about TONRIS AI virtual assistants
     </p>
     
     <div class="space-y-6">

@@ -183,9 +183,13 @@ const generateVapiConnectTwiML = (tenant) => {
   const twiml = new twilio.twiml.VoiceResponse();
   
   // Brief greeting
+  // twiml.say(
+  //   { voice: 'alice' },
+  //   `Thank you for calling ${tenant.name}. Connecting you now.`
+  // );
   twiml.say(
     { voice: 'alice' },
-    `Thank you for calling ${tenant.name}. Connecting you now.`
+    ``
   );
   
   // Forward the call to Vapi's phone number for this assistant

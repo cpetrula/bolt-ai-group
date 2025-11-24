@@ -234,7 +234,7 @@
             <div class="bg-gradient-to-br from-success-50 to-primary-50 rounded-xl p-6 border-2 border-primary-300">
               <div class="text-center mb-4">
                 <div class="text-4xl mb-3" role="img" aria-label="Robot emoji">🤖</div>
-                <h4 class="text-xl font-bold text-secondary-900 mb-2">Bolt AI Assistant</h4>
+                <h4 class="text-xl font-bold text-secondary-900 mb-2">TONRIS AI Assistant</h4>
                 <p class="text-sm text-secondary-600">Monthly plan</p>
               </div>
               <div class="space-y-3 text-secondary-700">
