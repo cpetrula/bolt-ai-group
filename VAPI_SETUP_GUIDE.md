@@ -1,7 +1,7 @@
 # Vapi Setup Guide - Quick Reference
 
 ## Problem This Solves
-If you're experiencing WebSocket handshake errors with Vapi integration, this guide will help you set up the correct configuration.
+If you're experiencing WebSocket handshake errors or "Couldn't Get Phone Number" errors with Vapi integration, this guide will help you set up the correct configuration.
 
 ## Required Environment Variables
 
@@ -12,8 +12,11 @@ Add these to your `.env` file:
 VAPI_API_KEY=[REDACTED]
 VAPI_ASSISTANT_ID=asst_xxxxxxxxxxxxxxxxxxxxxxxx
 
-# Optional - Only needed if you have a phone number configured in Vapi
+# Required - Phone number configuration (use one of these)
+# Option 1: Phone Number ID (recommended if you have it)
 VAPI_PHONE_NUMBER_ID=ph_xxxxxxxxxxxxxxxxxxxxxxxx
+# Option 2: Phone Number (use if you don't have Phone Number ID)
+VAPI_PHONE_NUMBER=+1234567890
 ```
 
 ## How to Get These Values
@@ -32,19 +35,25 @@ VAPI_PHONE_NUMBER_ID=ph_xxxxxxxxxxxxxxxxxxxxxxxx
 3. Select the assistant you want to use for phone calls
 4. Copy the Assistant ID from the assistant details (starts with `asst_`)
 
-### 3. Get VAPI_PHONE_NUMBER_ID (Optional)
+### 3. Get VAPI_PHONE_NUMBER_ID or VAPI_PHONE_NUMBER
 
-This is **optional**. Only set this if:
-- You have a phone number configured in Vapi dashboard
-- You want to associate incoming calls with a specific Vapi phone number
+**Important:** Vapi requires **either** `VAPI_PHONE_NUMBER_ID` **or** `VAPI_PHONE_NUMBER` to be set for inbound calls.
 
-To get it:
+#### Option 1: VAPI_PHONE_NUMBER_ID (Recommended)
+
+If you have a phone number configured in Vapi dashboard:
 1. Go to [Vapi Dashboard](https://dashboard.vapi.ai)
 2. Click on "Phone Numbers" in the sidebar
 3. Select your phone number
 4. Copy the Phone Number ID (starts with `ph_`)
 
-**Note:** If you don't have a phone number in Vapi or don't need this association, you can skip this variable.
+#### Option 2: VAPI_PHONE_NUMBER
+
+If you don't have a phone number ID, you can use your Twilio phone number:
+1. Use the same phone number that's configured in Twilio
+2. Format: `+1234567890` (E.164 format with country code)
+
+**Note:** The system will prefer `VAPI_PHONE_NUMBER_ID` if both are set.
 
 ## Verification
 
@@ -58,6 +67,7 @@ npm run dev
 Look for these log messages (indicating correct setup):
 - `Vapi API key not configured` - ❌ VAPI_API_KEY is missing
 - `Vapi Assistant ID not configured` - ❌ VAPI_ASSISTANT_ID is missing
+- `Vapi Phone Number ID or Phone Number not configured` - ❌ Both VAPI_PHONE_NUMBER_ID and VAPI_PHONE_NUMBER are missing
 - No warnings about Vapi - ✅ All required config is set
 
 ## Testing the Integration
@@ -82,6 +92,17 @@ Look for these log messages (indicating correct setup):
 - Double-check that `VAPI_ASSISTANT_ID` is set in your `.env` file
 - Make sure it starts with `asst_`
 - Verify the assistant exists in your Vapi dashboard
+
+### "Vapi Phone Number ID or Phone Number not configured" warning
+- You need either `VAPI_PHONE_NUMBER_ID` or `VAPI_PHONE_NUMBER` set in your `.env` file
+- If you have a Vapi phone number, get the ID from the Vapi dashboard
+- Otherwise, use your Twilio phone number in E.164 format (e.g., `+1234567890`)
+- Restart your backend after adding it
+
+### "Couldn't Get Phone Number" API error
+- This means neither `VAPI_PHONE_NUMBER_ID` nor `VAPI_PHONE_NUMBER` is configured
+- Set at least one of these environment variables
+- Vapi requires this to properly route incoming calls
 
 ### Calls not reaching Vapi
 - Check that both VAPI_API_KEY and VAPI_ASSISTANT_ID are set
