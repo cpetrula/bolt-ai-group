@@ -213,7 +213,7 @@ class VapiService {
       logger.info('Creating Vapi inbound call with provider bypass', {
         customerNumber,
         assistantId: this.assistantId,
-        phoneNumberId: this.phoneNumberId,
+        phoneNumberIdConfigured: !!this.phoneNumberId,  // Log presence, not value
         businessName,
         tenantId,
       });
@@ -243,7 +243,11 @@ class VapiService {
       const twiml = data.phoneCallProviderDetails?.twiml;
       
       if (!twiml) {
-        logger.error('Vapi response missing TwiML:', data);
+        logger.error('Vapi response missing TwiML:', {
+          hasData: !!data,
+          hasPhoneCallProviderDetails: !!data.phoneCallProviderDetails,
+          response: data,
+        });
         throw new AppError('Invalid Vapi response: missing TwiML', 500);
       }
       
