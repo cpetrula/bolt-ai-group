@@ -21,6 +21,32 @@ class VapiService {
   }
 
   /**
+   * Build payload with assistantOverrides for business name
+   * @private
+   */
+  _buildPayloadWithBusinessName(basePayload, options) {
+    const { businessName, ...restOptions } = options || {};
+    
+    const payload = {
+      ...basePayload,
+      ...restOptions,
+    };
+
+    // Add assistantOverrides with variableValues if businessName is provided
+    if (businessName) {
+      payload.assistantOverrides = {
+        ...payload.assistantOverrides,
+        variableValues: {
+          ...payload.assistantOverrides?.variableValues,
+          'business name': businessName,
+        },
+      };
+    }
+
+    return payload;
+  }
+
+  /**
    * Initiate an outbound call using Vapi
    * 
    * @param {string} phoneNumber - Phone number to call
@@ -38,27 +64,14 @@ class VapiService {
     }
 
     try {
-      // Build the request payload with assistantOverrides if businessName is provided
-      const payload = {
+      const basePayload = {
         assistantId: this.assistantId,
         customer: {
           number: phoneNumber,
         },
-        ...options,
       };
 
-      // Add assistantOverrides with variableValues if businessName is provided
-      if (options?.businessName) {
-        payload.assistantOverrides = {
-          ...payload.assistantOverrides,
-          variableValues: {
-            ...payload.assistantOverrides?.variableValues,
-            'business name': options.businessName,
-          },
-        };
-        // Remove businessName from top-level options to avoid duplication
-        delete payload.businessName;
-      }
+      const payload = this._buildPayloadWithBusinessName(basePayload, options);
 
       const response = await fetch(`${this.baseUrl}/call`, {
         method: 'POST',
@@ -105,24 +118,11 @@ class VapiService {
     }
 
     try {
-      // Build the request payload with assistantOverrides if businessName is provided
-      const payload = {
+      const basePayload = {
         assistantId: this.assistantId,
-        ...options,
       };
 
-      // Add assistantOverrides with variableValues if businessName is provided
-      if (options?.businessName) {
-        payload.assistantOverrides = {
-          ...payload.assistantOverrides,
-          variableValues: {
-            ...payload.assistantOverrides?.variableValues,
-            'business name': options.businessName,
-          },
-        };
-        // Remove businessName from top-level options to avoid duplication
-        delete payload.businessName;
-      }
+      const payload = this._buildPayloadWithBusinessName(basePayload, options);
 
       const response = await fetch(`${this.baseUrl}/call/web`, {
         method: 'POST',

@@ -21,26 +21,26 @@ class MockAppError extends Error {
 
 // Test the payload building logic
 function buildVapiPayload(phoneNumber, options, assistantId) {
+  const { businessName, ...restOptions } = options || {};
+  
   // Build the request payload with assistantOverrides if businessName is provided
   const payload = {
     assistantId: assistantId,
     customer: {
       number: phoneNumber,
     },
-    ...options,
+    ...restOptions,
   };
 
   // Add assistantOverrides with variableValues if businessName is provided
-  if (options?.businessName) {
+  if (businessName) {
     payload.assistantOverrides = {
       ...payload.assistantOverrides,
       variableValues: {
         ...payload.assistantOverrides?.variableValues,
-        'business name': options.businessName,
+        'business name': businessName,
       },
     };
-    // Remove businessName from top-level options to avoid duplication
-    delete payload.businessName;
   }
 
   return payload;
