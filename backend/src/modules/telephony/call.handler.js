@@ -195,26 +195,27 @@ const generateVapiConnectTwiML = (tenant) => {
   
   // Connect to Vapi using Twilio Stream
   // This streams the audio to Vapi's websocket and allows passing custom parameters
-  // API key must be passed as a query parameter in the URL for authentication
+  // API key and assistantId must be passed as query parameters in the URL for authentication
   const vapiApiKey = env.vapiApiKey || vapiService.apiKey;
+  const assistantId = env.vapiAssistantId || vapiService.assistantId;
   
   if (!vapiApiKey) {
     logger.error('Vapi API key not configured - cannot connect to Vapi');
     throw new Error('Vapi API key is required for WebSocket connection');
   }
   
+  if (!assistantId) {
+    logger.error('Vapi assistant ID not configured - cannot connect to Vapi');
+    throw new Error('Vapi assistant ID is required for WebSocket connection');
+  }
+  
   const connect = twiml.connect();
   const stream = connect.stream({
-    url: `wss://api.vapi.ai?apiKey=${vapiApiKey}`,
+    url: `wss://api.vapi.ai/v1/twiliows?Vapi-Key=${vapiApiKey}&assistantId=${assistantId}`,
   });
   
   // Pass custom parameters to Vapi including business name
   // These will be available in Vapi's assistant as variables
-  stream.parameter({
-    name: 'assistantId',
-    value: env.vapiAssistantId || vapiService.assistantId,
-  });
-  
   stream.parameter({
     name: 'businessName',
     value: tenant.name,
