@@ -205,9 +205,12 @@ class VapiService {
         if (!this.phoneNumber.startsWith('+') || !/^\+[0-9]+$/.test(this.phoneNumber)) {
           logger.warn(`Vapi phone number should be in E.164 format (e.g., +1234567890): ${this.phoneNumber}`);
         }
-        // Vapi API expects phoneNumber to be an object with a number property
+        // Vapi API expects phoneNumber to be an object with Twilio credentials
+        // when using phone call provider bypass
         basePayload.phoneNumber = {
-          number: this.phoneNumber,
+          twilioPhoneNumber: this.phoneNumber,
+          twilioAccountSid: env.twilioAccountSid,
+          twilioAuthToken: env.twilioAuthToken,
         };
       }
 
