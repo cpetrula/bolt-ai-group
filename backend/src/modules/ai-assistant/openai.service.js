@@ -49,7 +49,7 @@ class OpenAIService {
       if (!response.ok) {
         const errorText = await response.text();
         logger.error('OpenAI API error:', errorText);
-        throw new AppError(`OpenAI API error: ${errorText || response.statusText}`, response.status);
+        throw new AppError(`OpenAI API error: ${errorText?.trim() || response.statusText}`, response.status);
       }
 
       const data = await response.json();
