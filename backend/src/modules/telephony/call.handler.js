@@ -197,6 +197,12 @@ const generateVapiConnectTwiML = (tenant) => {
   // This streams the audio to Vapi's websocket and allows passing custom parameters
   // API key must be passed as a query parameter in the URL for authentication
   const vapiApiKey = env.vapiApiKey || vapiService.apiKey;
+  
+  if (!vapiApiKey) {
+    logger.error('Vapi API key not configured - cannot connect to Vapi');
+    throw new Error('Vapi API key is required for WebSocket connection');
+  }
+  
   const connect = twiml.connect();
   const stream = connect.stream({
     url: `wss://api.vapi.ai?apiKey=${vapiApiKey}`,
