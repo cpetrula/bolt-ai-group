@@ -104,7 +104,11 @@ const validateTwilioRequest = (req) => {
     }
 
     // Get the correct protocol (handle proxies/ngrok)
-    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    // X-Forwarded-Proto may contain multiple values, take the first one
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const protocol = forwardedProto 
+      ? forwardedProto.split(',')[0].trim() 
+      : req.protocol;
     
     // Construct the full URL as Twilio sees it
     const url = `${protocol}://${req.get('host')}${req.originalUrl}`;
