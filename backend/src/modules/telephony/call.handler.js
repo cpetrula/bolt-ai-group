@@ -13,19 +13,7 @@ const handleIncomingCall = async (
   res) => {
   try {
     // Validate Twilio signature for security
-    const signature = req.headers['x-twilio-signature'];
-    if (!signature) {
-      logger.error('Missing Twilio signature');
-      res.status(403).send('Forbidden');
-      return;
-    }
-
-    const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-    const isValid = twilioService.validateTwilioSignature(
-      signature,
-      url,
-      req.body
-    );
+    const isValid = twilioService.validateTwilioRequest(req);
 
     if (!isValid) {
       logger.error('Invalid Twilio signature');
@@ -37,7 +25,7 @@ const handleIncomingCall = async (
       CallSid,
       From,
       To,
-    } = req.body;
+    } = req.method === 'POST' ? req.body : req.query;
 
     logger.info(`Incoming call: ${CallSid} from ${From} to ${To}`);
 
@@ -100,19 +88,7 @@ const handleCallStatus = async (
   res) => {
   try {
     // Validate Twilio signature for security
-    const signature = req.headers['x-twilio-signature'];
-    if (!signature) {
-      logger.error('Missing Twilio signature');
-      res.status(403).send('Forbidden');
-      return;
-    }
-
-    const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-    const isValid = twilioService.validateTwilioSignature(
-      signature,
-      url,
-      req.body
-    );
+    const isValid = twilioService.validateTwilioRequest(req);
 
     if (!isValid) {
       logger.error('Invalid Twilio signature');
@@ -124,7 +100,7 @@ const handleCallStatus = async (
       CallSid,
       CallStatus,
       CallDuration,
-    } = req.body;
+    } = req.method === 'POST' ? req.body : req.query;
 
     logger.info(`Call status update: ${CallSid} - ${CallStatus}`);
 

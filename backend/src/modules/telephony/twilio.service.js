@@ -92,6 +92,52 @@ const validateTwilioSignature = (
 };
 
 /**
+ * Validate Twilio request from Express request object
+ * Properly handles GET/POST requests and proxy scenarios
+ */
+const validateTwilioRequest = (req) => {
+  try {
+    const signature = req.headers['x-twilio-signature'];
+    if (!signature) {
+      logger.error('Missing Twilio signature header');
+      return false;
+    }
+
+    // Get the correct protocol (handle proxies/ngrok)
+    // X-Forwarded-Proto may contain multiple values, take the first one
+    const forwardedProto = req.headers['x-forwarded-proto'];
+    const protocol = forwardedProto 
+      ? forwardedProto.split(',')[0].trim() 
+      : req.protocol;
+    
+    // Construct the full URL as Twilio sees it
+    const url = `${protocol}://${req.get('host')}${req.originalUrl}`;
+    
+    // For POST requests, use req.body; for GET requests, use req.query
+    // Twilio supports both GET and POST for webhooks
+    const params = req.method === 'POST' ? req.body : req.query;
+    
+    logger.debug(`Validating Twilio signature for ${req.method} ${url}`);
+    
+    const isValid = twilio.validateRequest(
+      env.twilioAuthToken,
+      signature,
+      url,
+      params
+    );
+    
+    if (!isValid) {
+      logger.error(`Invalid Twilio signature for ${req.method} request to ${url}`);
+    }
+    
+    return isValid;
+  } catch (error) {
+    logger.error('Error validating Twilio request:', error);
+    return false;
+  }
+};
+
+/**
  * Generate TwiML response for voice calls
  */
 const generateVoiceResponse = (message) => {
@@ -133,4 +179,4 @@ const releasePhoneNumber = async (phoneNumber) => {
   }
 };
 
-module.exports = { provisionPhoneNumber, sendSMS, validateTwilioSignature, generateVoiceResponse, generateSMSResponse, releasePhoneNumber };
+module.exports = { provisionPhoneNumber, sendSMS, validateTwilioSignature, validateTwilioRequest, generateVoiceResponse, generateSMSResponse, releasePhoneNumber };
