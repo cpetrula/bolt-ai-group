@@ -13,14 +13,15 @@ class VapiService {
     this.baseUrl = 'https://api.vapi.ai';
     this.assistantId = env.vapiAssistantId || '';
     this.phoneNumberId = env.vapiPhoneNumberId || '';
+    this.phoneNumber = env.vapiPhoneNumber || '';
     if (!this.apiKey) {
       logger.warn('Vapi API key not configured');
     }
     if (!this.assistantId) {
       logger.warn('Vapi Assistant ID not configured');
     }
-    if (!this.phoneNumberId) {
-      logger.warn('Vapi Phone Number ID not configured');
+    if (!this.phoneNumberId && !this.phoneNumber) {
+      logger.warn('Vapi Phone Number ID or Phone Number not configured');
     }
   }
 
@@ -195,9 +196,12 @@ class VapiService {
         },
       };
 
-      // Add phone number ID if configured
+      // Add phone number ID or phone number if configured
+      // Vapi requires either phoneNumberId or phoneNumber to be present
       if (this.phoneNumberId) {
         basePayload.phoneNumberId = this.phoneNumberId;
+      } else if (this.phoneNumber) {
+        basePayload.phoneNumber = this.phoneNumber;
       }
 
       // Add metadata if provided
@@ -213,7 +217,8 @@ class VapiService {
       logger.info('Creating Vapi inbound call with provider bypass', {
         customerNumber,
         assistantId: this.assistantId,
-        phoneNumberIdConfigured: !!this.phoneNumberId,  // Log presence, not value
+        phoneNumberIdConfigured: !!this.phoneNumberId,
+        phoneNumberConfigured: !!this.phoneNumber,
         businessName,
         tenantId,
       });
