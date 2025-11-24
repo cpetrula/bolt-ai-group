@@ -135,7 +135,7 @@ For an incoming call, the generated TwiML looks like:
 <Response>
   <Say voice="alice"/>
   <Connect>
-    <Stream url="wss://api.vapi.ai/v1/twiliows?Vapi-Key=your_vapi_api_key&amp;assistantId=asst_xxxxx">
+    <Stream url="wss://api.vapi.ai/v2/stream?assistantId=asst_xxxxx&amp;apikey=your_vapi_api_key">
       <Parameter name="businessName" value="Elegant Salon &amp; Spa"/>
       <Parameter name="tenantId" value="tenant-123"/>
     </Stream>

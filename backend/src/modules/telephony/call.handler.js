@@ -223,7 +223,7 @@ const generateVapiConnectTwiML = (tenant) => {
   // Note: API key in URL is required by Vapi's Twilio Stream integration - ensure WebSocket URLs are not logged
   const connect = twiml.connect();
   const stream = connect.stream({
-    url: `wss://api.vapi.ai/v1/twiliows?Vapi-Key=${vapiApiKey}&assistantId=${assistantId}`,
+    url: `wss://api.vapi.ai/v2/stream?assistantId=${assistantId}&apikey=${vapiApiKey}`,
   });
   
   // Pass custom parameters to Vapi including business name

@@ -9,30 +9,31 @@ Description: The server has returned an HTTP code different from 101 to the conn
 ```
 
 ## Root Cause
-The WebSocket connection to Vapi was using an incorrect endpoint and missing required authentication parameters:
+The WebSocket connection to Vapi was using an incorrect endpoint and/or incorrect authentication parameter names:
 
-**Original (Incorrect):**
+**Previous Attempts:**
 ```
-wss://api.vapi.ai/call/twilio
+wss://api.vapi.ai/call/twilio  (did not exist)
+wss://api.vapi.ai/v1/twiliows?Vapi-Key=${vapiApiKey}&assistantId=${assistantId}  (wrong parameter name)
 ```
 
-This endpoint did not exist or did not support the authentication method being used.
+These endpoints either did not exist or used incorrect authentication parameter names, causing Twilio to receive a non-101 HTTP response during WebSocket handshake.
 
 ## Solution
-Updated the WebSocket URL to use the correct Vapi Twilio Stream integration endpoint with proper authentication:
+Updated the WebSocket URL to use the correct Vapi Twilio Stream integration endpoint with proper authentication parameter names:
 
-**New (Correct):**
+**Correct Endpoint:**
 ```
-wss://api.vapi.ai/v1/twiliows?Vapi-Key=${vapiApiKey}&assistantId=${assistantId}
+wss://api.vapi.ai/v2/stream?assistantId=${assistantId}&apikey=${vapiApiKey}
 ```
 
 ### Key Changes
 
-1. **Correct Endpoint**: Changed to `/v1/twiliows` which is Vapi's official Twilio Stream integration endpoint
+1. **Correct Endpoint Path**: Changed to `/v2/stream` which is Vapi's current Twilio Stream integration endpoint
 
-2. **Authentication via URL**: Added `Vapi-Key` and `assistantId` as query parameters in the URL
+2. **Correct Authentication Parameter**: Changed from `Vapi-Key` to `apikey` (lowercase)
    - Twilio Stream doesn't support custom WebSocket headers
-   - Vapi requires these parameters in the URL for authentication
+   - Vapi requires the API key as `apikey` query parameter (not `Vapi-Key`)
 
 3. **Validation**: Added validation to ensure both API key and assistant ID are configured before attempting connection
 
@@ -41,10 +42,10 @@ wss://api.vapi.ai/v1/twiliows?Vapi-Key=${vapiApiKey}&assistantId=${assistantId}
 ## Technical Details
 
 ### Vapi Twilio Stream Integration
-According to Vapi's documentation:
-- Endpoint: `wss://api.vapi.ai/v1/twiliows`
+Based on working examples and testing:
+- Endpoint: `wss://api.vapi.ai/v2/stream`
 - Required query parameters:
-  - `Vapi-Key`: Your Vapi API key
+  - `apikey`: Your Vapi API key (lowercase, not `Vapi-Key`)
   - `assistantId`: Your Vapi assistant ID
 - Optional parameters (passed as Stream parameters):
   - `businessName`: Tenant/business name
@@ -56,7 +57,7 @@ According to Vapi's documentation:
 <Response>
   <Say voice="alice"/>
   <Connect>
-    <Stream url="wss://api.vapi.ai/v1/twiliows?Vapi-Key=your_api_key&assistantId=asst_xxxxx">
+    <Stream url="wss://api.vapi.ai/v2/stream?assistantId=asst_xxxxx&apikey=your_api_key">
       <Parameter name="businessName" value="Your Business Name"/>
       <Parameter name="tenantId" value="tenant-id"/>
     </Stream>
