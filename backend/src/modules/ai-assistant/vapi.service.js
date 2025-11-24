@@ -201,6 +201,10 @@ class VapiService {
       if (this.phoneNumberId) {
         basePayload.phoneNumberId = this.phoneNumberId;
       } else if (this.phoneNumber) {
+        // Validate phone number format (should be E.164 format)
+        if (!this.phoneNumber.startsWith('+') || !/^\+[0-9]+$/.test(this.phoneNumber)) {
+          logger.warn(`Vapi phone number should be in E.164 format (e.g., +1234567890): ${this.phoneNumber}`);
+        }
         basePayload.phoneNumber = this.phoneNumber;
       }
 
