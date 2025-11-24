@@ -41,7 +41,7 @@ class VapiService {
         body: JSON.stringify({
           assistantId: this.assistantId,
           customer: {
-            number,
+            number: phoneNumber,
           },
           ...options,
         }),
@@ -62,6 +62,62 @@ class VapiService {
       throw error instanceof AppError
         ? error
         : new AppError('Failed to initiate call', 500);
+    }
+  }
+
+  /**
+   * Create a web call session for incoming calls
+   * This is used when Twilio forwards an incoming call to Vapi
+   * 
+   * @param {Object} options - Configuration for the web call
+   * @param {string} options.assistantId - ID of the Vapi assistant (optional, uses default if not provided)
+   * @param {Object} options.customer - Customer information
+   * @param {string} options.customer.number - Customer phone number
+   * @param {Object} options.metadata - Additional metadata to pass to Vapi
+   * @returns {Promise<string>} The web call ID that can be used for connection
+   */
+  async createWebCall(options) {
+    if (!this.apiKey || !this.assistantId) {
+      throw new AppError('Vapi not configured', 500);
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/call/web`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          assistantId: this.assistantId,
+          ...options,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        logger.error('Vapi web call API error:', error);
+        throw new AppError(`Vapi web call error: ${response.statusText}`, response.status);
+      }
+
+      const data = await response.json();
+      
+      // Normalize the response to always return a call ID
+      const callId = data.id || data.callId || data.webCallId;
+      
+      if (!callId) {
+        logger.error('Vapi web call response missing ID:', data);
+        throw new AppError('Invalid Vapi web call response', 500);
+      }
+      
+      logger.info(`Web call created, ID: ${callId}`);
+      
+      return callId;
+    } catch (error) {
+      logger.error('Error creating web call:', error);
+      throw error instanceof AppError
+        ? error
+        : new AppError('Failed to create web call', 500);
     }
   }
 

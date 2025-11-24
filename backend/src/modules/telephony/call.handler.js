@@ -1,7 +1,10 @@
 const { Request, Response } = require('express');
 const { prisma } = require('../../config/db');
 const { logger } = require('../../utils/logger');
+const twilio = require('twilio');
 const twilioService = require('./twilio.service');
+const { vapiService } = require('../ai-assistant/vapi.service');
+const { env } = require('../../config/env');
 const { CallReason } = require('@prisma/client');
 
 /**
@@ -59,11 +62,22 @@ const handleIncomingCall = async (
     logger.info(`Call log created: ${callLog.id} for tenant ${tenant.name}`);
 
     // Generate TwiML response
-    // In production, this would forward to AI assistant (Vapi, OpenAI, etc.)
-    // For now, we provide a basic greeting
-    const greeting = `Hello and thank you for calling ${tenant.name}. This is your AI assistant. How may I help you today? You can ask about our services, pricing, hours, or to book an appointment.`;
+    // In production, forward to Vapi AI assistant for intelligent call handling
+    let twiml;
     
-    const twiml = twilioService.generateVoiceResponse(greeting);
+    // Check if Vapi is configured for production use
+    if (vapiService.apiKey && vapiService.assistantId) {
+      // Production mode: Forward call to Vapi's phone number
+      // Vapi provides a dedicated phone number for each assistant
+      // This is the secure, recommended approach
+      logger.info(`Forwarding call to Vapi assistant ${vapiService.assistantId}`);
+      twiml = generateVapiConnectTwiML(tenant);
+    } else {
+      // Fallback mode: Basic greeting when Vapi is not configured
+      logger.warn('Vapi not configured, using fallback greeting');
+      const greeting = `Hello and thank you for calling ${tenant.name}. This is your AI assistant. How may I help you today? You can ask about our services, pricing, hours, or to book an appointment.`;
+      twiml = twilioService.generateVoiceResponse(greeting);
+    }
 
     res.type('text/xml');
     res.send(twiml);
@@ -159,6 +173,48 @@ const updateCallLog = async (
     logger.error('Error updating call log:', error);
     throw error;
   }
+};
+
+/**
+ * Generate TwiML to connect call to Vapi AI assistant
+ * Uses Vapi's phone number system for secure, production-ready integration
+ */
+const generateVapiConnectTwiML = (tenant) => {
+  const twiml = new twilio.twiml.VoiceResponse();
+  
+  // Brief greeting
+  twiml.say(
+    { voice: 'alice' },
+    `Thank you for calling ${tenant.name}. Connecting you now.`
+  );
+  
+  // Forward the call to Vapi's phone number for this assistant
+  // In Vapi dashboard, you get a dedicated phone number per assistant
+  // Set VAPI_PHONE_NUMBER in .env to this number
+  const vapiPhoneNumber = env.vapiPhoneNumber;
+  
+  if (vapiPhoneNumber) {
+    // Dial Vapi's phone number
+    // Vapi automatically handles the call with the configured assistant
+    const dial = twiml.dial({
+      callerId: tenant.twilioPhoneNumber, // Use tenant's number as caller ID
+    });
+    dial.number(vapiPhoneNumber);
+    
+    // Fallback message if Vapi doesn't answer
+    twiml.say(
+      { voice: 'alice' },
+      'Our AI assistant is currently unavailable. Please try again later.'
+    );
+  } else {
+    // No Vapi phone number configured - provide instructions
+    twiml.say(
+      { voice: 'alice' },
+      'To enable AI assistant features, configure your Vapi phone number in the environment settings. For now, please call back later or visit our website to book online.'
+    );
+  }
+  
+  return twiml.toString();
 };
 
 module.exports = { handleIncomingCall, handleCallStatus, updateCallLog };

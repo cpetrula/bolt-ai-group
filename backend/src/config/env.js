@@ -19,6 +19,7 @@ const env = {
   jwtExpiresIn: getEnvVariable('JWT_EXPIRES_IN', '7d'),
   logLevel: getEnvVariable('LOG_LEVEL', 'info'),
   appName: getEnvVariable('APP_NAME', 'Bolt AI Salon'),
+  ngrokUrl: process.env.NGROK_URL,
   stripeSecretKey: getEnvVariable('STRIPE_SECRET_KEY'),
   stripeWebhookSecret: getEnvVariable('STRIPE_WEBHOOK_SECRET'),
   stripeMonthlyPriceId: getEnvVariable('STRIPE_MONTHLY_PRICE_ID'),
@@ -29,6 +30,7 @@ const env = {
   openaiApiKey: process.env.OPENAI_API_KEY,
   vapiApiKey: process.env.VAPI_API_KEY,
   vapiAssistantId: process.env.VAPI_ASSISTANT_ID,
+  vapiPhoneNumber: process.env.VAPI_PHONE_NUMBER,
   elevenlabsApiKey: process.env.ELEVENLABS_API_KEY,
 };
 
