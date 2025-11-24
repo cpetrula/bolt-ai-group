@@ -13,15 +13,14 @@ class VapiService {
     this.baseUrl = 'https://api.vapi.ai';
     this.assistantId = env.vapiAssistantId || '';
     this.phoneNumberId = env.vapiPhoneNumberId || '';
-    this.phoneNumber = env.vapiPhoneNumber || '';
     if (!this.apiKey) {
       logger.warn('Vapi API key not configured');
     }
     if (!this.assistantId) {
       logger.warn('Vapi Assistant ID not configured');
     }
-    if (!this.phoneNumberId && !this.phoneNumber) {
-      logger.warn('Vapi Phone Number ID or Phone Number not configured');
+    if (!this.phoneNumberId) {
+      logger.warn('VAPI_PHONE_NUMBER_ID not configured - inbound calls with provider bypass will not work. Import your Twilio number into Vapi to get a phoneNumberId.');
     }
   }
 
@@ -185,38 +184,28 @@ class VapiService {
       throw new AppError('Vapi not configured', 500);
     }
 
+    // Vapi requires phoneNumberId for inbound calls with phone call provider bypass
+    // The Twilio phone number must be imported into Vapi first to get a phoneNumberId
+    // See: https://docs.vapi.ai/phone-calling for how to import a Twilio number
+    if (!this.phoneNumberId) {
+      logger.error('VAPI_PHONE_NUMBER_ID is required for inbound calls. Import your Twilio number into Vapi to get a phoneNumberId.');
+      throw new AppError(
+        'Vapi phone number not configured. Import your Twilio number into Vapi and set VAPI_PHONE_NUMBER_ID.',
+        500
+      );
+    }
+
     try {
       const { customerNumber, businessName, tenantId, metadata } = options;
 
       const basePayload = {
         assistantId: this.assistantId,
         phoneCallProviderBypassEnabled: true,
+        phoneNumberId: this.phoneNumberId,
         customer: {
           number: customerNumber,
         },
       };
-
-      // Add phone number ID or phone number if configured
-      // Vapi requires either phoneNumberId or phoneNumber to be present
-      if (this.phoneNumberId) {
-        basePayload.phoneNumberId = this.phoneNumberId;
-      } else if (this.phoneNumber) {
-        // Validate phone number format (should be E.164 format)
-        if (!this.phoneNumber.startsWith('+') || !/^\+[0-9]+$/.test(this.phoneNumber)) {
-          logger.warn(`Vapi phone number should be in E.164 format (e.g., +1234567890): ${this.phoneNumber}`);
-        }
-        // Validate Twilio credentials are available
-        if (!env.twilioAccountSid || !env.twilioAuthToken) {
-          throw new AppError('Twilio credentials not configured for Vapi phone call provider bypass', 500);
-        }
-        // Vapi API expects phoneNumber to be an object with Twilio credentials
-        // when using phone call provider bypass
-        basePayload.phoneNumber = {
-          twilioPhoneNumber: this.phoneNumber,
-          twilioAccountSid: env.twilioAccountSid,
-          twilioAuthToken: env.twilioAuthToken,
-        };
-      }
 
       // Add metadata if provided
       if (metadata || tenantId) {
@@ -231,8 +220,7 @@ class VapiService {
       logger.info('Creating Vapi inbound call with provider bypass', {
         customerNumber,
         assistantId: this.assistantId,
-        phoneNumberIdConfigured: !!this.phoneNumberId,
-        phoneNumberConfigured: !!this.phoneNumber,
+        phoneNumberId: this.phoneNumberId,
         businessName,
         tenantId,
       });

@@ -293,13 +293,20 @@ Add these environment variables to your `.env` file:
 # Vapi Configuration
 VAPI_API_KEY=your_vapi_api_key_here
 VAPI_ASSISTANT_ID=your_vapi_assistant_id_here
-VAPI_PHONE_NUMBER_ID=your_vapi_phone_number_id_here  # Optional
+VAPI_PHONE_NUMBER_ID=your_vapi_phone_number_id_here  # Required for inbound calls
 
 # Your public URL (required for Vapi to call your APIs)
 NGROK_URL=https://your-ngrok-url.ngrok-free.app
 ```
 
-**Note about VAPI_PHONE_NUMBER_ID**: This is optional. If you have a phone number configured in Vapi and want to associate it with incoming calls, set this value. Otherwise, Vapi will use the assistant ID to handle calls.
+**Important: VAPI_PHONE_NUMBER_ID is required for inbound calls**
+
+To use Vapi for inbound calls with phone call provider bypass, you must:
+1. Import your Twilio phone number into Vapi: https://docs.vapi.ai/phone-calling
+2. Get the Phone Number ID from the Vapi dashboard
+3. Set `VAPI_PHONE_NUMBER_ID` in your environment
+
+Without this, inbound calls will fail with a "Number Not Found on Twilio" error.
 
 ### Step 5: Update Twilio Webhook
 
@@ -538,6 +545,27 @@ VAPI_ASSISTANT_ID=your_assistant_id_here
 1. Update Twilio phone number webhook URL
 2. Ensure ngrok is running and URL matches
 3. Check Twilio debugger for webhook errors
+
+### Issue: "Number Not Found on Twilio" Error
+
+**Cause**: `VAPI_PHONE_NUMBER_ID` is not configured or the Twilio number has not been imported into Vapi
+
+**Error message**: `Vapi inbound call error: {"statusCode":400,"message":"Number Not Found on Twilio.","error":"Bad Request",...}`
+
+**Solution**:
+1. Import your Twilio phone number into Vapi:
+   - Go to the Vapi dashboard: https://dashboard.vapi.ai/
+   - Navigate to Phone Numbers
+   - Click "Import" and enter your Twilio credentials
+   - Select the phone number you want to import
+2. Copy the Phone Number ID from the Vapi dashboard
+3. Add to your `.env`:
+   ```env
+   VAPI_PHONE_NUMBER_ID=your_vapi_phone_number_id_here
+   ```
+4. Restart your backend server
+
+**Note**: When using `phoneCallProviderBypassEnabled`, Vapi requires a `phoneNumberId` that corresponds to an imported phone number. You cannot use the raw Twilio phone number directly.
 
 ## Advanced Configuration
 
