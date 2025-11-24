@@ -91,9 +91,9 @@ class VapiService {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        logger.error('Vapi API error:', error);
-        throw new AppError(`Vapi API error: ${response.statusText}`, response.status);
+        const errorText = await response.text();
+        logger.error('Vapi API error:', errorText);
+        throw new AppError(`Vapi API error: ${errorText || response.statusText}`, response.status);
       }
 
       const data = await response.json();
@@ -142,9 +142,9 @@ class VapiService {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        logger.error('Vapi web call API error:', error);
-        throw new AppError(`Vapi web call error: ${response.statusText}`, response.status);
+        const errorText = await response.text();
+        logger.error('Vapi web call API error:', errorText);
+        throw new AppError(`Vapi web call error: ${errorText || response.statusText}`, response.status);
       }
 
       const data = await response.json();
@@ -234,7 +234,7 @@ class VapiService {
           statusText: response.statusText,
           error: errorText,
         });
-        throw new AppError(`Vapi inbound call error: ${response.statusText}`, response.status);
+        throw new AppError(`Vapi inbound call error: ${errorText || response.statusText}`, response.status);
       }
 
       const data = await response.json();
@@ -304,9 +304,9 @@ class VapiService {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        logger.error('Vapi API error ending call:', error);
-        throw new AppError(`Failed to end call: ${response.statusText}`, response.status);
+        const errorText = await response.text();
+        logger.error('Vapi API error ending call:', errorText);
+        throw new AppError(`Failed to end call: ${errorText || response.statusText}`, response.status);
       }
 
       logger.info(`Call ${callId} ended successfully`);
@@ -335,9 +335,9 @@ class VapiService {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        logger.error('Vapi API error getting call status:', error);
-        throw new AppError(`Failed to get call status: ${response.statusText}`, response.status);
+        const errorText = await response.text();
+        logger.error('Vapi API error getting call status:', errorText);
+        throw new AppError(`Failed to get call status: ${errorText || response.statusText}`, response.status);
       }
 
       const data = await response.json();
@@ -375,9 +375,9 @@ class VapiService {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        logger.error('Vapi API error configuring assistant:', error);
-        throw new AppError(`Failed to configure assistant: ${response.statusText}`, response.status);
+        const errorText = await response.text();
+        logger.error('Vapi API error configuring assistant:', errorText);
+        throw new AppError(`Failed to configure assistant: ${errorText || response.statusText}`, response.status);
       }
 
       const data = await response.json();
