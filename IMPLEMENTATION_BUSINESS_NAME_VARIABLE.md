@@ -1,7 +1,7 @@
 # Implementation Summary: Business Name Variable in Vapi API Calls
 
 ## Issue
-Include the business name of the tenant as a variable in the Vapi API call when making an API call to start the assistant. The variable should be in the assistantOverrides object's variableValues field, named "business name", and should be dynamic based on the tenant.
+The business name is not being pulled from the database and sent to Vapi. This fix ensures the business name associated with the Twilio phone number is retrieved and passed to Vapi during the call initialization.
 
 ## Solution Implemented
 
@@ -11,23 +11,45 @@ Include the business name of the tenant as a variable in the Vapi API call when 
    - Added private helper method `_buildPayloadWithBusinessName()` to handle payload construction with business name
    - Updated `initiateCall()` method to accept `businessName` in options
    - Updated `createWebCall()` method to accept `businessName` in options
-   - Both methods now automatically add business name to `assistantOverrides.variableValues['business name']`
+   - Changed variable name from "business name" to "businessName" (camelCase) in assistantOverrides.variableValues
    - Used object destructuring to avoid mutating the original options object
    - Added comprehensive JSDoc documentation
 
-2. **Created Documentation**:
-   - `BUSINESS_NAME_VARIABLE_USAGE.md`: Complete usage guide with examples
-   - Includes examples for both outbound and web calls
-   - Shows how to retrieve business name from tenant record dynamically
+2. **Modified `call.handler.js`**:
+   - Updated `generateVapiConnectTwiML()` to use Twilio Stream integration
+   - Streams audio to Vapi's websocket endpoint (wss://api.vapi.ai/call/twilio)
+   - Passes businessName as a stream parameter along with assistantId and tenantId
+   - Business name is extracted from the tenant record that's already retrieved from the database
 
-3. **Added Tests**:
-   - `test-business-name-feature.js`: Comprehensive test suite
+3. **Updated Tests**:
+   - `test-business-name-feature.js`: Updated to use "businessName" instead of "business name"
    - Tests cover: basic usage, missing business name, existing overrides, multi-tenant scenarios
    - All tests pass successfully
 
 ## How It Works
 
-### API Usage
+### For Incoming Calls (Twilio → Vapi)
+
+When a call comes in to a Twilio number:
+
+1. Twilio sends webhook to `/api/webhooks/twilio/voice`
+2. Backend identifies tenant by matching the Twilio phone number (To field)
+3. Backend generates TwiML with `<Connect><Stream>` to Vapi's websocket
+4. TwiML includes custom parameters: businessName, tenantId, assistantId
+5. Vapi receives the call with business name as a variable
+
+```javascript
+// In call.handler.js - handleIncomingCall
+const tenant = await prisma.tenant.findFirst({
+  where: { twilioPhoneNumber: To },
+});
+
+// TwiML generation includes business name
+const twiml = generateVapiConnectTwiML(tenant);
+// This passes tenant.name as businessName parameter
+```
+
+### For Programmatic API Calls
 
 When calling either `initiateCall` or `createWebCall`, pass the business name in the options:
 
@@ -69,7 +91,7 @@ const callId = await vapiService.initiateCall(phoneNumber, {
   },
   "assistantOverrides": {
     "variableValues": {
-      "business name": "Elegant Salon & Spa"
+      "businessName": "Elegant Salon & Spa"
     }
   }
 }
@@ -99,10 +121,28 @@ node test-business-name-feature.js
 
 All tests pass, verifying:
 - Business name correctly added to variableValues
-- Variable name is "business name" (with space)
+- Variable name is "businessName" (camelCase, not "business name")
 - businessName not in top-level payload
 - Existing assistantOverrides preserved
 - Works correctly for multiple tenants
+
+### TwiML Output Example
+
+For an incoming call, the generated TwiML looks like:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="alice"/>
+  <Connect>
+    <Stream url="wss://api.vapi.ai/call/twilio">
+      <Parameter name="assistantId" value="asst_xxxxx"/>
+      <Parameter name="businessName" value="Elegant Salon &amp; Spa"/>
+      <Parameter name="tenantId" value="tenant-123"/>
+    </Stream>
+  </Connect>
+</Response>
+```
 
 ## Code Review & Security
 
@@ -118,15 +158,17 @@ To use the business name variable in your Vapi assistant configuration:
 
 **System Prompt:**
 ```
-You are a helpful AI assistant for {{business name}}. 
+You are a helpful AI assistant for {{businessName}}. 
 Greet customers warmly and help them with their needs.
 ```
 
 **First Message:**
 ```
-Hello! Thank you for calling {{business name}}. 
+Hello! Thank you for calling {{businessName}}. 
 How may I assist you today?
 ```
+
+**Note**: The variable name is now `businessName` (camelCase) instead of `business name`.
 
 ## Future Enhancements
 
@@ -138,15 +180,17 @@ This implementation provides a foundation for:
 
 ## Files Modified
 
-1. `backend/src/modules/ai-assistant/vapi.service.js` - Core implementation
-2. `backend/src/modules/ai-assistant/BUSINESS_NAME_VARIABLE_USAGE.md` - Documentation
-3. `backend/test-business-name-feature.js` - Tests
+1. `backend/src/modules/ai-assistant/vapi.service.js` - Core implementation (variable name change)
+2. `backend/src/modules/telephony/call.handler.js` - Twilio Stream integration
+3. `backend/test-business-name-feature.js` - Tests updated for new variable name
+4. `IMPLEMENTATION_BUSINESS_NAME_VARIABLE.md` - This documentation
 
 ## Verification
 
 The implementation has been:
 - ✅ Tested with comprehensive test suite
 - ✅ Reviewed for code quality
-- ✅ Scanned for security vulnerabilities
+- ✅ Scanned for security vulnerabilities (0 issues found)
 - ✅ Documented thoroughly
 - ✅ Verified to work with multi-tenant scenarios
+- ✅ TwiML generation verified with proper XML encoding

@@ -42,7 +42,7 @@ class VapiService {
         ...payload.assistantOverrides,
         variableValues: {
           ...payload.assistantOverrides?.variableValues,
-          'business name': businessName,
+          'businessName': businessName,
         },
       };
     }
