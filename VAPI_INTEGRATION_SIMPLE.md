@@ -2,17 +2,17 @@
 
 ## Overview
 
-This guide explains how to integrate Vapi with your Bolt AI Group salon booking system to handle incoming phone calls with AI-powered conversation.
+This guide explains how to integrate Vapi with your Bolt AI Group salon booking system to handle incoming phone calls with AI-powered conversation using the **Phone Call Provider Bypass** method.
 
 ## How It Works
 
 ### Simple Flow
 
 ```
-Customer → Calls Your Twilio Number → Backend Webhook → TwiML Forwards to Vapi Number → Vapi AI Assistant
+Customer → Calls Your Twilio Number → Backend Webhook → Calls Vapi API → Vapi Returns TwiML → Twilio Connects to Vapi WebSocket → Vapi AI Assistant
 ```
 
-**That's it!** Vapi handles the entire conversation, calling your backend APIs as needed to book appointments, check availability, etc.
+**The key**: Instead of forwarding to a Vapi phone number, we call Vapi's API which generates a unique WebSocket URL for each call.
 
 ## Quick Setup (5 Minutes)
 
@@ -26,11 +26,12 @@ Customer → Calls Your Twilio Number → Backend Webhook → TwiML Forwards to 
 3. Configure the system prompt (see below)
 4. Add tools/functions for your backend APIs (see below)
 
-### Step 2: Get Your Vapi Phone Number
+### Step 2: Get Your Vapi Credentials
 
-When you create an assistant in Vapi, you'll get a dedicated phone number. This is the magic number that handles all the AI conversation.
-
-**Example**: `+1-555-999-8888`
+From the Vapi dashboard, get:
+- **API Key**: From Account Settings
+- **Assistant ID**: From your assistant's settings
+- **Phone Number ID** (Optional): If you have a phone number configured in Vapi
 
 ### Step 3: Configure Environment Variables
 
@@ -40,7 +41,7 @@ Add to your `.env` file:
 # Vapi Configuration
 VAPI_API_KEY=your_api_key_from_vapi_dashboard
 VAPI_ASSISTANT_ID=your_assistant_id
-VAPI_PHONE_NUMBER=+15559998888  # The phone number from Step 2
+VAPI_PHONE_NUMBER_ID=your_phone_number_id  # Optional
 
 # Your backend URL (for Vapi to call your APIs)
 NGROK_URL=https://your-ngrok-url.ngrok-free.app
@@ -50,9 +51,11 @@ NGROK_URL=https://your-ngrok-url.ngrok-free.app
 
 That's it! When someone calls your Twilio number:
 1. Twilio sends webhook to your backend
-2. Your backend generates TwiML that forwards the call to Vapi's phone number
-3. Vapi's AI handles the conversation
-4. Vapi calls your backend APIs to book appointments, check availability, etc.
+2. Your backend calls Vapi's API with `phoneCallProviderBypassEnabled: true`
+3. Vapi returns TwiML with a unique WebSocket URL
+4. Twilio connects to that WebSocket URL
+5. Vapi's AI handles the conversation
+6. Vapi calls your backend APIs to book appointments, check availability, etc.
 
 ## Vapi Assistant Configuration
 
@@ -197,10 +200,15 @@ handleIncomingCall(req, res) {
   // 3. Create call log
   const callLog = await prisma.callLog.create({ ... });
   
-  // 4. Generate TwiML
+  // 4. Call Vapi API to create inbound call
   if (vapiService.apiKey && vapiService.assistantId) {
-    // Forward to Vapi
-    twiml = generateVapiConnectTwiML(tenant);
+    // Use phone call provider bypass
+    twiml = await vapiService.createInboundCall({
+      customerNumber: req.body.From,
+      businessName: tenant.name,
+      tenantId: tenant.id,
+      metadata: { callLogId: callLog.id, callSid: req.body.CallSid }
+    });
   } else {
     // Fallback: basic greeting
     twiml = twilioService.generateVoiceResponse(greeting);
@@ -209,38 +217,63 @@ handleIncomingCall(req, res) {
   // 5. Send TwiML to Twilio
   res.send(twiml);
 }
+```
 
-// Generate TwiML that forwards to Vapi
-generateVapiConnectTwiML(tenant) {
-  const twiml = new VoiceResponse();
+### In `vapi.service.js`
+
+```javascript
+// Create inbound call with provider bypass
+async createInboundCall(options) {
+  const { customerNumber, businessName, tenantId, metadata } = options;
   
-  // Brief greeting
-  twiml.say(`Thank you for calling ${tenant.name}. Connecting you now.`);
+  // Call Vapi's API
+  const response = await fetch('https://api.vapi.ai/call', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.apiKey}`
+    },
+    body: JSON.stringify({
+      assistantId: this.assistantId,
+      phoneCallProviderBypassEnabled: true,
+      customer: { number: customerNumber },
+      phoneNumberId: this.phoneNumberId,  // Optional
+      metadata: { tenantId, ...metadata },
+      assistantOverrides: {
+        variableValues: { businessName }
+      }
+    })
+  });
   
-  // Forward to Vapi's phone number
-  const dial = twiml.dial({ callerId: tenant.twilioPhoneNumber });
-  dial.number(env.vapiPhoneNumber);  // Vapi's magic number
+  const data = await response.json();
   
-  return twiml.toString();
+  // Return TwiML from Vapi's response
+  return data.phoneCallProviderDetails.twiml;
 }
 ```
 
 ### Generated TwiML Example
 
+Vapi returns TwiML with a unique WebSocket URL for each call:
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="alice">Thank you for calling Demo Salon. Connecting you now.</Say>
-  <Dial callerId="+15551234567">
-    <Number>+15559998888</Number>
-  </Dial>
+  <Connect>
+    <Stream url="wss://api.vapi.ai/abc123-unique-call-id/transport">
+      <!-- Vapi manages parameters internally -->
+    </Stream>
+  </Connect>
 </Response>
 ```
 
+**Key Point**: The WebSocket URL is unique for each call and generated by Vapi, not hardcoded!
+
 ## Security & Best Practices
 
-✅ **Secure**: No API keys exposed in TwiML
-✅ **Simple**: Just phone number forwarding
+✅ **Secure**: API key sent via Authorization header, not exposed in URLs
+✅ **Modern**: Uses Vapi's latest phone call provider bypass approach
+✅ **Dynamic**: Each call gets a unique WebSocket URL from Vapi
 ✅ **Reliable**: Vapi handles all AI logic
 ✅ **Scalable**: Works for any number of tenants
 
@@ -271,12 +304,25 @@ Add to Vapi tool headers:
 
 ## Troubleshooting
 
-### Call doesn't forward to Vapi
+### WebSocket handshake error
+
+**This was the original issue!** It happened when using a static WebSocket URL.
+
+**Solution**: The code now uses Vapi's API to get a unique WebSocket URL for each call.
 
 **Check**:
-- Is `VAPI_PHONE_NUMBER` set in `.env`?
-- Is the number correct (with country code)?
-- Check backend logs for "Forwarding call to Vapi"
+- Is `VAPI_API_KEY` set in `.env`?
+- Is `VAPI_ASSISTANT_ID` set in `.env`?
+- Check backend logs for "Successfully created Vapi inbound call"
+- Check Vapi dashboard to see if call was received
+
+### Call doesn't connect to Vapi
+
+**Check**:
+- Backend logs for errors when calling Vapi API
+- Vapi API key is correct (starts with `sk_`)
+- Assistant ID is correct (format: `asst_...`)
+- Network connectivity to `api.vapi.ai`
 
 ### Vapi doesn't call your APIs
 
@@ -321,14 +367,21 @@ Store in tenant settings:
 ## Summary
 
 That's it! Three simple steps:
-1. Create Vapi assistant → Get phone number
-2. Add VAPI_PHONE_NUMBER to .env
+1. Create Vapi assistant → Get API key and Assistant ID
+2. Add VAPI_API_KEY and VAPI_ASSISTANT_ID to .env
 3. Configure tools to call your backend APIs
+
+The phone call provider bypass approach ensures:
+- Each call gets a unique WebSocket connection
+- No WebSocket handshake errors
+- Better security (no API keys in URLs)
+- Full compatibility with Vapi's latest features
 
 Your callers will experience seamless AI-powered appointment booking without you building any AI infrastructure!
 
 ## Support
 
 - **Vapi Docs**: https://docs.vapi.ai
+- **Vapi Provider Bypass Guide**: https://docs.vapi.ai/calls/call-handling-with-vapi-and-twilio
 - **Vapi Discord**: Active community support
 - **Backend API Docs**: See `/backend/src/modules/ai-assistant/README.md`
