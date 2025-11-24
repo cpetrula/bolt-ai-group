@@ -23,6 +23,10 @@ class VapiService {
   /**
    * Build payload with assistantOverrides for business name
    * @private
+   * @param {Object} basePayload - Base payload object to extend
+   * @param {Object} options - Options object that may contain businessName
+   * @param {string} options.businessName - Business name to add to variableValues
+   * @returns {Object} Payload with assistantOverrides if businessName is provided
    */
   _buildPayloadWithBusinessName(basePayload, options) {
     const { businessName, ...restOptions } = options || {};
