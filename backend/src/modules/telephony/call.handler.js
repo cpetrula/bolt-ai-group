@@ -195,9 +195,11 @@ const generateVapiConnectTwiML = (tenant) => {
   
   // Connect to Vapi using Twilio Stream
   // This streams the audio to Vapi's websocket and allows passing custom parameters
+  // API key must be passed as a query parameter in the URL for authentication
+  const vapiApiKey = env.vapiApiKey || vapiService.apiKey;
   const connect = twiml.connect();
   const stream = connect.stream({
-    url: `wss://api.vapi.ai/call/twilio`,
+    url: `wss://api.vapi.ai?apiKey=${vapiApiKey}`,
   });
   
   // Pass custom parameters to Vapi including business name

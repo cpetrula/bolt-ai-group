@@ -135,7 +135,7 @@ For an incoming call, the generated TwiML looks like:
 <Response>
   <Say voice="alice"/>
   <Connect>
-    <Stream url="wss://api.vapi.ai/call/twilio">
+    <Stream url="wss://api.vapi.ai?apiKey=your_vapi_api_key">
       <Parameter name="assistantId" value="asst_xxxxx"/>
       <Parameter name="businessName" value="Elegant Salon &amp; Spa"/>
       <Parameter name="tenantId" value="tenant-123"/>
@@ -143,6 +143,8 @@ For an incoming call, the generated TwiML looks like:
   </Connect>
 </Response>
 ```
+
+**Note:** The API key is included as a query parameter in the WebSocket URL for authentication.
 
 ## Code Review & Security
 
