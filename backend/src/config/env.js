@@ -31,7 +31,6 @@ const env = {
   vapiApiKey: process.env.VAPI_API_KEY,
   vapiAssistantId: process.env.VAPI_ASSISTANT_ID,
   vapiPhoneNumberId: process.env.VAPI_PHONE_NUMBER_ID,
-  vapiPhoneNumber: process.env.VAPI_PHONE_NUMBER,
   elevenlabsApiKey: process.env.ELEVENLABS_API_KEY,
 };
 
