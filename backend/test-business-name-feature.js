@@ -38,7 +38,7 @@ function buildVapiPayload(phoneNumber, options, assistantId) {
       ...payload.assistantOverrides,
       variableValues: {
         ...payload.assistantOverrides?.variableValues,
-        'business name': businessName,
+        'businessName': businessName,
       },
     };
   }
@@ -72,7 +72,7 @@ console.log(JSON.stringify(test1, null, 2));
 console.log('');
 
 // Verify the structure
-if (test1.assistantOverrides?.variableValues?.['business name'] === 'Elegant Salon & Spa') {
+if (test1.assistantOverrides?.variableValues?.['businessName'] === 'Elegant Salon & Spa') {
   console.log('✅ Test 1 PASSED: Business name correctly set in variableValues');
 } else {
   console.log('❌ Test 1 FAILED: Business name not correctly set');
@@ -145,7 +145,7 @@ console.log('Output payload:');
 console.log(JSON.stringify(test3, null, 2));
 console.log('');
 
-if (test3.assistantOverrides?.variableValues?.['business name'] === 'Premium Spa') {
+if (test3.assistantOverrides?.variableValues?.['businessName'] === 'Premium Spa') {
   console.log('✅ Test 3 PASSED: Business name correctly added to variableValues');
 } else {
   console.log('❌ Test 3 FAILED: Business name not correctly added');
@@ -186,7 +186,7 @@ tenants.forEach((tenant) => {
     'asst_xxxxx'
   );
   console.log(`Tenant: ${tenant.name}`);
-  console.log(`  Variable value: ${payload.assistantOverrides?.variableValues?.['business name']}`);
+  console.log(`  Variable value: ${payload.assistantOverrides?.variableValues?.['businessName']}`);
 });
 console.log('');
 console.log('✅ Test 4 PASSED: Different business names handled correctly');
@@ -198,7 +198,7 @@ console.log('='.repeat(60));
 console.log('');
 console.log('Summary:');
 console.log('- Business name is correctly added to assistantOverrides.variableValues');
-console.log('- The variable name is "business name" (with space)');
+console.log('- The variable name is "businessName" (camelCase)');
 console.log('- businessName is removed from top-level payload');
 console.log('- Existing assistantOverrides are preserved and merged');
 console.log('- Works correctly for multiple tenants');

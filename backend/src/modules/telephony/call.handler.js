@@ -177,12 +177,13 @@ const updateCallLog = async (
 
 /**
  * Generate TwiML to connect call to Vapi AI assistant
- * Uses Vapi's phone number system for secure, production-ready integration
+ * Uses Twilio's Connect/Stream to forward audio to Vapi's websocket
+ * This allows passing custom metadata including business name
  */
 const generateVapiConnectTwiML = (tenant) => {
   const twiml = new twilio.twiml.VoiceResponse();
   
-  // Brief greeting
+  // Brief greeting (commented out for direct connection)
   // twiml.say(
   //   { voice: 'alice' },
   //   `Thank you for calling ${tenant.name}. Connecting you now.`
@@ -192,31 +193,31 @@ const generateVapiConnectTwiML = (tenant) => {
     ``
   );
   
-  // Forward the call to Vapi's phone number for this assistant
-  // In Vapi dashboard, you get a dedicated phone number per assistant
-  // Set VAPI_PHONE_NUMBER in .env to this number
-  const vapiPhoneNumber = env.vapiPhoneNumber;
+  // Connect to Vapi using Twilio Stream
+  // This streams the audio to Vapi's websocket and allows passing custom parameters
+  const connect = twiml.connect();
+  const stream = connect.stream({
+    url: `wss://api.vapi.ai/call/twilio`,
+  });
   
-  if (vapiPhoneNumber) {
-    // Dial Vapi's phone number
-    // Vapi automatically handles the call with the configured assistant
-    const dial = twiml.dial({
-      callerId: tenant.twilioPhoneNumber, // Use tenant's number as caller ID
-    });
-    dial.number(vapiPhoneNumber);
-    
-    // Fallback message if Vapi doesn't answer
-    twiml.say(
-      { voice: 'alice' },
-      'Our AI assistant is currently unavailable. Please try again later.'
-    );
-  } else {
-    // No Vapi phone number configured - provide instructions
-    twiml.say(
-      { voice: 'alice' },
-      'To enable AI assistant features, configure your Vapi phone number in the environment settings. For now, please call back later or visit our website to book online.'
-    );
-  }
+  // Pass custom parameters to Vapi including business name
+  // These will be available in Vapi's assistant as variables
+  stream.parameter({
+    name: 'assistantId',
+    value: env.vapiAssistantId || vapiService.assistantId,
+  });
+  
+  stream.parameter({
+    name: 'businessName',
+    value: tenant.name,
+  });
+  
+  stream.parameter({
+    name: 'tenantId',
+    value: tenant.id,
+  });
+  
+  logger.info(`Connecting call to Vapi assistant for tenant: ${tenant.name}`);
   
   return twiml.toString();
 };
