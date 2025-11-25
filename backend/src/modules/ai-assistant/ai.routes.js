@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { authMiddleware } = require('../../middleware/auth');
+const { vapiAuthMiddleware } = require('../../middleware/vapiAuth');
 const { apiLimiter } = require('../../middleware/rateLimit');
 const aiController = require('./ai.controller');
 
@@ -18,7 +18,7 @@ const router = Router();
 router.post(
   '/availability',
   apiLimiter,
-  authMiddleware,
+  vapiAuthMiddleware,
   aiController.checkAvailabilityValidation,
   aiController.checkAvailability
 );
@@ -30,7 +30,7 @@ router.post(
 router.post(
   '/appointments',
   apiLimiter,
-  authMiddleware,
+  vapiAuthMiddleware,
   aiController.manageAppointmentValidation,
   aiController.manageAppointment
 );
@@ -42,7 +42,7 @@ router.post(
 router.post(
   '/services',
   apiLimiter,
-  authMiddleware,
+  vapiAuthMiddleware,
   aiController.getServiceInfo
 );
 
@@ -53,7 +53,7 @@ router.post(
 router.post(
   '/process',
   apiLimiter,
-  authMiddleware,
+  vapiAuthMiddleware,
   aiController.processInputValidation,
   aiController.processInput
 );
