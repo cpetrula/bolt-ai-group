@@ -34,15 +34,17 @@ const vapiAuthMiddleware = async (req, _res, next) => {
     // Vapi sends tenantId in the request body (either directly or in metadata)
     const tenantId = req.body?.tenantId || req.body?.metadata?.tenantId;
     
-    if (tenantId) {
+    if (tenantId && typeof tenantId === 'string') {
+      const trimmedTenantId = tenantId.trim();
+      
       // Validate that tenantId is a valid UUID format
-      if (!tenantId.trim() || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId.trim())) {
+      if (!trimmedTenantId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmedTenantId)) {
         throw new AppError('Invalid tenant ID format. Must be a valid UUID.', 400);
       }
 
       // Validate that the tenant exists
       const tenant = await prisma.tenant.findUnique({
-        where: { id: tenantId.trim() },
+        where: { id: trimmedTenantId },
         select: {
           id: true,
           name: true,
@@ -68,7 +70,7 @@ const vapiAuthMiddleware = async (req, _res, next) => {
     }
 
     // No valid JWT and no Vapi metadata - reject the request
-    throw new AppError('No token provided', 401);
+    throw new AppError('Authentication required: provide JWT token or valid tenant ID', 401);
   } catch (error) {
     if (error instanceof AppError) {
       next(error);
