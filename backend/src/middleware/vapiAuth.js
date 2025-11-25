@@ -70,7 +70,7 @@ const vapiAuthMiddleware = async (req, _res, next) => {
     }
 
     // No valid JWT and no Vapi metadata - reject the request
-    throw new AppError('Authentication required: provide JWT token or valid tenant ID', 401);
+    throw new AppError('Authentication required', 401);
   } catch (error) {
     if (error instanceof AppError) {
       next(error);
